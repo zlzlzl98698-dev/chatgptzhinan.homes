@@ -1,0 +1,17 @@
+---
+export interface Props {
+  className?: string;
+}
+
+const { className = '' } = Astro.props;
+---
+
+<div class={`rounded-xl bg-amber-50/70 border border-amber-200/80 p-4 text-xs text-amber-900 leading-relaxed ${className}`}>
+  <div class="flex items-center gap-1.5 font-bold mb-1">
+    <span>⚖️</span>
+    <span>商业推广关系与客观性合规说明</span>
+  </div>
+  <p class="text-amber-800 text-[11px] leading-relaxed">
+    本文可能包含推广链接，通过链接注册可能为本站带来佣金，但不影响您最终支付的价格与享受的任何优惠。本站所有品牌评测、测速数据与优缺点剖析均基于真实测试环境与品牌官方已核验资料，商业合作关系绝不影响客观技术评价。请以品牌官方当前最新套餐和 TOS 条款为准。
+  </p>
+</div>

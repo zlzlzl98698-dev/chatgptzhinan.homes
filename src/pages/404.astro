@@ -1,0 +1,44 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { TOPICS } from '@/data/topics';
+---
+
+<BaseLayout
+  title="404 - 页面未找到 | chatgpt指南"
+  description="抱歉，您访问的页面不存在或已被迁移。请浏览推荐专题或返回首页。"
+  canonical="https://chatgptzhinan.homes/404/"
+  robots="noindex, follow"
+>
+  <div class="max-w-2xl mx-auto py-16 text-center space-y-6">
+    <div class="text-6xl font-extrabold text-emerald-600 font-mono">
+      404
+    </div>
+    <h1 class="text-2xl sm:text-3xl font-bold text-slate-900">
+      抱歉，未找到您访问的页面
+    </h1>
+    <p class="text-sm text-slate-500 leading-relaxed">
+      该页面可能已被移动、更名，或输入的网址有误。您可以从下方核心专题重新导航：
+    </p>
+
+    <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 my-8 text-left">
+      {TOPICS.slice(0, 6).map((topic) => (
+        <a
+          href={`/${topic.slug}/`}
+          class="p-3 bg-white border border-slate-200 rounded-xl hover:border-emerald-500 transition-colors"
+        >
+          <div class="font-bold text-slate-800 text-xs">{topic.navTitle}</div>
+          <div class="text-[10px] text-slate-400 mt-0.5">{topic.subtopics.length} 个子专题</div>
+        </a>
+      ))}
+    </div>
+
+    <div>
+      <a
+        href="/"
+        class="inline-flex items-center px-6 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs shadow-sm transition-colors"
+      >
+        &larr; 返回网站首页
+      </a>
+    </div>
+  </div>
+</BaseLayout>

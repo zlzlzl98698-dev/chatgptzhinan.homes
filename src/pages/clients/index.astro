@@ -1,0 +1,327 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { CLIENTS } from '@/data/clients';
+
+const VALID_CLIENT_SUBTOPICS: Record<string, string> = {
+  'clash-verge-rev': '/clients/clash-verge-rev/',
+  'clash-meta': '/clients/clash-meta/',
+  'v2rayn': '/clients/v2rayn/',
+  'shadowrocket': '/clients/shadowrocket/',
+  'mihomo': '/clients/mihomo/',
+  'sing-box': '/clients/sing-box/',
+  'hiddify': '/clients/hiddify/',
+  'flclash': '/clients/flclash/',
+  'v2rayng': '/clients/v2rayn/',
+  'openclash': '/clients/mihomo/',
+  'nikki': '/clients/mihomo/'
+};
+
+const getClientUrl = (slug: string) => VALID_CLIENT_SUBTOPICS[slug] || '/clients/';
+import { getTopicBySlug } from '@/data/topics';
+import AffiliateDisclaimer from '@/components/brands/AffiliateDisclaimer.astro';
+
+const topic = getTopicBySlug('clients')!;
+
+const breadcrumbs = [
+  { name: '首页', url: '/' },
+  { name: '客户端软件', url: '/clients/' }
+];
+
+const faqs = [
+  { q: '代理客户端和机场订阅到底是什么关系？', a: '最生动的比喻：代理客户端就像是手机上的「音乐播放器」，而机场订阅链接就是「VIP 在线歌单」。没有播放器就无法解码发声，没有歌单就无法获取歌曲。两者是完全解耦的：一个 Clash Verge 播放器可以同时导入多个不同机场的歌单。' },
+  { q: '为什么原本流行的 Clash for Windows 不推荐用了？', a: '原作者已于 2023 年底主动删库停止维护，内核停留在旧版本，存在未修复的安全漏洞且不支持新一代高速协议。目前整个开源社区已全面迁移至持续活跃维护、基于全新 Mihomo 内核的「Clash Verge Rev」或「FlClash」。' },
+  { q: '苹果手机（iPhone/iPad）怎么下载 Shadowrocket 小火箭？', a: '由于国内 App Store 审查政策，Shadowrocket 无法在国区搜索到。需要准备一个美国或香港等外区 Apple ID，进入 App Store 搜索购买（官方售价通常为 2.99 美元），下载安装后切回国区 Apple ID 即可永久正常使用与更新。' },
+  { q: '开启 TUN 模式有什么用？需要管理员权限吗？', a: '普通系统代理仅对 Chrome/Edge 等主动支持代理设置的浏览器生效。开启 TUN 模式会在操作系统中创建一个虚拟网卡，强制接管整台电脑的所有网络流量（包括 CMD 命令行、Git、Steam 游戏、Discord 语音），首次开启需要右键“以管理员身份运行”安装服务。' },
+  { q: '为什么 NekoBox for Android 官方特别发出安全警告？', a: 'NekoBox 原开源项目官方明确声明维护资源有限，并严正警告：Google Play 上目前存在的同名版本已经被未经授权的第三方控制，极有可能被植入了恶意后门，安卓用户请务必前往官方 GitHub Releases 下载纯净 APK。' },
+  { q: 'Mac 电脑安装 Clash Verge Rev 为什么提示文件损坏？', a: '这是 macOS Gatekeeper 的安全机制拦截。首先确认下载的是对应架构的安装包（M1/M2/M3/M4 芯片选 aarch64，老款 Intel 选 x64）；其次若提示损坏，在终端执行 sudo xattr -r -d com.apple.quarantine /Applications/Clash\\ Verge.app 即可解除隔离。' },
+  { q: '客户端经常提示“订阅下载失败”怎么解决？', a: '① 检查本地网络是否正处于断网或系统时间偏差超过 60 秒；② 开启一个已有的备用节点后再点击更新订阅；③ 复制订阅链接粘贴进浏览器直接访问，看能否正常下载配置文件以排查是否为宽带运营商阻断。' }
+];
+
+const schema = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'CollectionPage',
+    'name': '2026 全平台代理客户端知识与教程中心',
+    'description': topic.description,
+    'url': 'https://chatgptzhinan.homes/clients/'
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    'mainEntity': faqs.map(f => ({
+      '@type': 'Question',
+      'name': f.q,
+      'acceptedAnswer': {
+        '@type': 'Answer',
+        'text': f.a
+      }
+    }))
+  }
+];
+---
+
+<BaseLayout
+  title="代理客户端软件大全｜Clash Verge Rev、v2rayN、小火箭全平台下载与配置"
+  description="涵盖 Windows、macOS、iOS、Android、Linux 与软路由全平台客户端知识：Clash Verge Rev、v2rayN、Shadowrocket、FlClash、Hiddify 官方来源与保姆配置手册。"
+  canonical="https://chatgptzhinan.homes/clients/"
+  breadcrumbs={breadcrumbs}
+  schema={schema}
+>
+
+  <article class="max-w-4xl mx-auto py-6 space-y-10">
+    
+    <!-- Hero Header -->
+    <header class="space-y-4">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-teal-50 text-teal-700 border border-teal-200 text-xs font-semibold">
+        <span>💻 工具全家桶与教程中心</span>
+        <span>·</span>
+        <span>Pillar Page 实操工具指南</span>
+      </div>
+
+      <h1 class="text-3xl sm:text-5xl font-extrabold text-slate-900 tracking-tight leading-tight">
+        代理客户端软件全景指南：<br class="hidden sm:inline" />
+        <span class="bg-gradient-to-r from-teal-600 to-emerald-600 bg-clip-text text-transparent">全平台下载、内核选型与防后门</span>
+      </h1>
+
+      <!-- Answer-First Box -->
+      <div class="rounded-2xl bg-gradient-to-r from-teal-50 via-emerald-50 to-teal-50 border border-teal-200 p-6 shadow-sm my-6 space-y-3">
+        <div class="flex items-center gap-2 text-teal-900 font-bold text-sm">
+          <span>⚡ 客户端选型结论先行（Client Selection Summary）</span>
+        </div>
+        <p class="text-sm sm:text-base text-slate-800 leading-relaxed font-medium">
+          <strong>Windows 电脑端首选「Clash Verge Rev」</strong>（Mihomo内核，支持 TUN 虚拟网卡）；<strong>苹果 iOS 手机首推「Shadowrocket 小火箭」</strong>（外区 App Store 购买下载）；<strong>安卓手机推荐「v2rayNG」或现代轻量「FlClash」</strong>；<strong>macOS 苹果电脑选用「Clash Verge Rev（按芯片架构区分）」</strong>；<strong>路由器选用「OpenClash」或新一代「Nikki (OpenWrt 24.10+)」</strong>。切勿从百度搜索来源不明的第三方下载站获取安装包以防木马后门！
+        </p>
+        <div class="pt-3 border-t border-teal-200/60 flex flex-wrap items-center justify-between gap-2 text-xs text-teal-800">
+          <span>收录范围：6 大操作系统 · 25+ 款主流客户端项目</span>
+          <span>最新核验：2026 年 11 月 21 日</span>
+        </div>
+      </div>
+
+      <!-- Jump Nav -->
+      <nav class="bg-white border border-slate-200 rounded-2xl p-4 sm:p-5 shadow-xs">
+        <div class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">章节导航 · 快速定位客户端</div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 text-xs">
+          <a href="#os-compatibility-matrix" class="text-slate-700 hover:text-emerald-600 py-1">一、操作系统 × 客户端兼容矩阵 &rarr;</a>
+          <a href="#recommended-clients" class="text-slate-700 hover:text-emerald-600 py-1">二、主流首选客户端核心档案 &rarr;</a>
+          <a href="#client-vs-subscription" class="text-slate-700 hover:text-emerald-600 py-1">三、客户端与订阅服务的核心关系 &rarr;</a>
+          <a href="#security-verification" class="text-slate-700 hover:text-emerald-600 py-1">四、官方安全下载与防后门校验 &rarr;</a>
+          <a href="#tun-mode-explained" class="text-slate-700 hover:text-emerald-600 py-1">五、TUN 模式与系统代理全解 &rarr;</a>
+          <a href="#client-subtopics" class="text-slate-700 hover:text-emerald-600 py-1">六、客户端专题 8 大细分中心 &rarr;</a>
+          <a href="#client-faq" class="text-slate-700 hover:text-emerald-600 py-1">七、客户端常见配置故障答疑 &rarr;</a>
+        </div>
+      </nav>
+    </header>
+
+    <!-- Section 1: OS Compatibility Matrix -->
+    <section id="os-compatibility-matrix" class="space-y-4 pt-4">
+      <h2 class="text-2xl font-bold text-slate-900 tracking-tight">
+        一、操作系统 × 代理客户端兼容全景矩阵
+      </h2>
+      <p class="text-xs sm:text-sm text-slate-600 leading-relaxed">
+        根据你的设备系统，一览主流软件的内核类型、支持协议与维护活跃度：
+      </p>
+
+      <div class="overflow-x-auto rounded-2xl border border-slate-200 bg-white shadow-xs">
+        <table class="w-full text-left text-xs border-collapse">
+          <thead>
+            <tr class="bg-slate-50 border-b border-slate-200 text-slate-700 font-semibold whitespace-nowrap">
+              <th class="p-3.5">客户端软件</th>
+              <th class="p-3.5">适用操作系统</th>
+              <th class="p-3.5">核心引擎</th>
+              <th class="p-3.5">TUN 模式</th>
+              <th class="p-3.5">费用属性</th>
+              <th class="p-3.5">官方项目来源</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-100 text-slate-600 whitespace-nowrap">
+            {CLIENTS.map((c) => (
+              <tr class="hover:bg-slate-50/80">
+                <td class="p-3.5 font-bold text-slate-900">
+                  <a href={getClientUrl(c.slug)} class="hover:text-emerald-600 underline">
+                    {c.name}
+                  </a>
+                  {c.isRecommended && <span class="ml-1 text-[10px] bg-emerald-50 text-emerald-700 px-1.5 py-0.5 rounded font-bold">推荐</span>}
+                </td>
+                <td class="p-3.5 uppercase font-mono text-[11px] text-slate-500">
+                  {c.os.join(', ')}
+                </td>
+                <td class="p-3.5 font-mono">{c.core}</td>
+                <td class="p-3.5 text-emerald-600 font-bold">支持</td>
+                <td class="p-3.5">
+                  <span class={`px-2 py-0.5 rounded text-[10px] font-semibold ${c.pricingType === 'free' ? 'bg-slate-100 text-slate-700' : 'bg-amber-50 text-amber-800'}`}>
+                    {c.pricingType === 'free' ? '免费开源' : '付费应用'}
+                  </span>
+                </td>
+                <td class="p-3.5 text-slate-400 font-mono text-[11px] truncate max-w-xs">
+                  {c.officialSource}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Section 2: Recommended Clients Cards -->
+    <section id="recommended-clients" class="space-y-4 pt-6 border-t border-slate-200">
+      <h2 class="text-2xl font-bold text-slate-900 tracking-tight">
+        二、主流全平台首选客户端深度档案
+      </h2>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        {CLIENTS.map((client) => (
+          <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-xs flex flex-col justify-between hover:border-emerald-500 hover:shadow-md transition-all">
+            <div>
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-xs font-mono font-bold text-emerald-600">{client.core}</span>
+                <span class="text-[10px] px-2 py-0.5 rounded bg-slate-100 text-slate-600 uppercase font-semibold">
+                  {client.os.join(' · ')}
+                </span>
+              </div>
+              <h3 class="text-base font-bold text-slate-900 mb-1">
+                <a href={getClientUrl(client.slug)} class="hover:text-emerald-600 transition-colors">
+                  {client.name}
+                </a>
+              </h3>
+              <p class="text-xs text-slate-600 leading-relaxed mb-3">
+                {client.description}
+              </p>
+              <ul class="space-y-1 text-[11px] text-slate-500 my-2">
+                {client.features.map((feat) => (
+                  <li>• {feat}</li>
+                ))}
+              </ul>
+              {client.riskNotice && (
+                <div class="mt-2 p-2 rounded-lg bg-amber-50 border border-amber-200 text-amber-800 text-[11px]">
+                  ⚠️ {client.riskNotice}
+                </div>
+              )}
+            </div>
+            <div class="pt-3 border-t border-slate-100 flex items-center justify-between text-xs">
+              <span class="text-slate-400">官方核验</span>
+              <a href={getClientUrl(client.slug)} class="text-emerald-600 font-bold hover:underline">
+                查看安装教程 &rarr;
+              </a>
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <!-- Section 3: Client vs Subscription Relation -->
+    <section id="client-vs-subscription" class="space-y-4 pt-6 border-t border-slate-200 prose prose-slate max-w-none text-xs sm:text-sm text-slate-700 leading-relaxed">
+      <h2 class="text-2xl font-bold text-slate-900 tracking-tight not-prose">
+        三、客户端与订阅服务：彻底理顺两者关系
+      </h2>
+      <p>
+        许多刚接触科学上网的新手常有一个普遍误解：“我下载安装了 Clash，为什么还是打不开 Google？”
+      </p>
+      <p>
+        <strong>核心真相：</strong> 客户端本身只是一个开源的代理协议解析与网络转发工具（类似一个空壳播放器）。它本身不带任何服务器节点和海外网络带宽。你必须在机场服务商处购买套餐，获取一条包含节点 IP、端口和密码密钥的「订阅链接」，将订阅链接复制导入到客户端中，客户端才能连接到海外机房帮你实现网页加速。
+      </p>
+      <p>
+        <strong>优势所在：</strong> 这种架构赋予了用户极大的自由度。你可以自由选择体验最好的客户端（如电脑用 Clash Verge Rev，手机用小火箭），无论更换哪家机场，只需在客户端中更换一条订阅链接即可，无需重新学习新的软件操作。
+      </p>
+    </section>
+
+    <!-- Section 4: Security Verification -->
+    <section id="security-verification" class="space-y-4 pt-6 border-t border-slate-200">
+      <h2 class="text-2xl font-bold text-slate-900 tracking-tight">
+        四、官方安全下载与防后门木马核验
+      </h2>
+      <div class="bg-rose-50/70 border border-rose-200 rounded-2xl p-5 text-xs text-rose-900 space-y-2">
+        <div class="font-bold text-sm flex items-center gap-1.5">
+          <span>🚨</span>
+          <span>高危警告：警惕百度搜索排名前列的李鬼客户端网站</span>
+        </div>
+        <p class="leading-relaxed">
+          大量黑灰产团队通过百度竞价广告投放所谓的“Clash Windows 中文官网”、“v2rayN 官方下载站”。这类网站提供的安装包被植入了勒索病毒、键盘记录器甚至挖矿木马。<strong>切记：开源代理软件绝不存在所谓的“中文商业官网”，唯一的官方发布源只有官方 GitHub Releases 或苹果官方 App Store！</strong>
+        </p>
+      </div>
+    </section>
+
+    <!-- Section 5: 8 Subtopics of Clients -->
+    <section id="client-subtopics" class="space-y-4 pt-6 border-t border-slate-200">
+      <div class="flex items-center justify-between">
+        <h2 class="text-2xl font-bold text-slate-900 tracking-tight">
+          五、客户端软件专题下属 8 大细分中心
+        </h2>
+        <span class="text-xs text-slate-400">主流软件深度图文教程</span>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        {topic.subtopics.map((sub, sIdx) => (
+          <div class="bg-white border border-slate-200 rounded-2xl p-5 flex flex-col justify-between hover:border-teal-500 hover:shadow-md transition-all">
+            <div>
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-xs font-mono font-bold text-teal-600">CLIENT HUB #{sIdx + 1}</span>
+                <span class="text-[10px] px-2 py-0.5 rounded bg-slate-100 text-slate-600 uppercase font-medium">
+                  {sub.searchIntent}
+                </span>
+              </div>
+              <h3 class="font-bold text-base text-slate-900 mb-1.5">
+                <a href={`/clients/${sub.slug}/`} class="hover:text-teal-600 transition-colors">
+                  {sub.title}
+                </a>
+              </h3>
+              <p class="text-xs text-slate-600 leading-relaxed mb-3 line-clamp-2">
+                {sub.heroAnswer}
+              </p>
+            </div>
+            <div class="pt-3 border-t border-slate-100 flex items-center justify-between text-xs">
+              <span class="text-slate-400">含安装与排错步骤</span>
+              <a href={`/clients/${sub.slug}/`} class="text-teal-600 font-semibold hover:underline">
+                阅读教程 &rarr;
+              </a>
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <!-- Section 6: FAQ -->
+    <section id="client-faq" class="space-y-4 pt-6 border-t border-slate-200">
+      <h2 class="text-2xl font-bold text-slate-900 tracking-tight flex items-center gap-2">
+        <span>❓</span>
+        <span>客户端软件常见疑问（FAQ）</span>
+      </h2>
+
+      <div class="space-y-3">
+        {faqs.map((faq) => (
+          <div class="bg-white border border-slate-200 rounded-2xl p-4 sm:p-5 shadow-2xs">
+            <h3 class="font-bold text-slate-900 text-sm mb-2 flex items-start gap-2">
+              <span class="text-teal-600 font-bold">问：</span>
+              <span>{faq.q}</span>
+            </h3>
+            <p class="text-xs sm:text-sm text-slate-600 leading-relaxed pl-6">
+              <strong class="text-teal-700">答：</strong>{faq.a}
+            </p>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <!-- Cross Interlinks -->
+    <section class="pt-6 border-t border-slate-200 space-y-3">
+      <h3 class="font-bold text-slate-900 text-sm">
+        🔗 相关一级专题推荐导航：
+      </h3>
+      <div class="flex flex-wrap gap-2 text-xs">
+        <a href="/tutorials/" class="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-teal-50 hover:text-teal-700 text-slate-700 transition-colors">
+          使用教程专题（订阅导入与分流设置） &rarr;
+        </a>
+        <a href="/troubleshooting/" class="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-teal-50 hover:text-teal-700 text-slate-700 transition-colors">
+          故障排查中心（客户端无法启动与报错解决） &rarr;
+        </a>
+        <a href="/airport/" class="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-teal-50 hover:text-teal-700 text-slate-700 transition-colors">
+          可直接导入订阅的高速机场推荐 &rarr;
+        </a>
+      </div>
+    </section>
+
+    <div class="pt-4">
+      <AffiliateDisclaimer />
+    </div>
+
+  </article>
+
+</BaseLayout>

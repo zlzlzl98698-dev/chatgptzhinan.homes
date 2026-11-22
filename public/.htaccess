@@ -1,0 +1,70 @@
+# ====================================================================
+# Apache 2.4+ Static Deployment Configuration for chatgptzhinan.homes
+# ====================================================================
+
+RewriteEngine On
+
+# 1. Force HTTPS and canonical non-www domain
+RewriteCond %{HTTPS} off
+RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+RewriteCond %{HTTP_HOST} ^www\.chatgptzhinan\.homes$ [NC]
+RewriteRule ^(.*)$ https://chatgptzhinan.homes/$1 [L,R=301]
+
+# 2. Custom 404 Error Document
+ErrorDocument 404 /404.html
+
+# 3. Sitemap URL alias
+RewriteRule ^sitemap\.xml$ /sitemap-index.xml [L]
+
+# 4. Enforce trailing slashes on directories
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_URI} !(.[a-zA-Z0-9]{1,5}|/)$
+RewriteRule ^(.*)$ /$1/ [R=301,L]
+
+# 3. Enable Gzip / Deflate Compression
+<IfModule mod_deflate.c>
+  AddOutputFilterByType DEFLATE text/plain
+  AddOutputFilterByType DEFLATE text/html
+  AddOutputFilterByType DEFLATE text/xml
+  AddOutputFilterByType DEFLATE text/css
+  AddOutputFilterByType DEFLATE application/xml
+  AddOutputFilterByType DEFLATE application/xhtml+xml
+  AddOutputFilterByType DEFLATE application/rss+xml
+  AddOutputFilterByType DEFLATE application/javascript
+  AddOutputFilterByType DEFLATE application/x-javascript
+  AddOutputFilterByType DEFLATE application/json
+  AddOutputFilterByType DEFLATE image/svg+xml
+</IfModule>
+
+# 4. Browser Caching Rules
+<IfModule mod_expires.c>
+  ExpiresActive On
+  ExpiresDefault "access plus 1 month"
+
+  # HTML documents (keep fresh)
+  ExpiresByType text/html "access plus 1 hour"
+
+  # CSS, JavaScript & Pagefind
+  ExpiresByType text/css "access plus 1 year"
+  ExpiresByType application/javascript "access plus 1 year"
+  ExpiresByType application/x-javascript "access plus 1 year"
+
+  # Images & Media
+  ExpiresByType image/jpeg "access plus 1 year"
+  ExpiresByType image/png "access plus 1 year"
+  ExpiresByType image/webp "access plus 1 year"
+  ExpiresByType image/svg+xml "access plus 1 year"
+  ExpiresByType image/x-icon "access plus 1 year"
+
+  # Fonts
+  ExpiresByType font/woff2 "access plus 1 year"
+  ExpiresByType font/woff "access plus 1 year"
+</IfModule>
+
+# 5. Security Headers
+<IfModule mod_headers.c>
+  Header set X-Content-Type-Options "nosniff"
+  Header set X-Frame-Options "SAMEORIGIN"
+  Header set Referrer-Policy "strict-origin-when-cross-origin"
+</IfModule>

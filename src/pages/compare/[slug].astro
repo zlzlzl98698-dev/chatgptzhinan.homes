@@ -1,0 +1,342 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { COMPARISONS, type BrandComparisonItem } from '@/data/comparisons';
+import { BRANDS } from '@/data/brands';
+import AffiliateDisclaimer from '@/components/brands/AffiliateDisclaimer.astro';
+
+export async function getStaticPaths() {
+  return COMPARISONS.map((comp) => ({
+    params: { slug: comp.slug },
+    props: { comp }
+  }));
+}
+
+export interface Props {
+  comp: BrandComparisonItem;
+}
+
+const { comp } = Astro.props;
+
+const brandA = BRANDS.find(b => b.slug === comp.brandASlug) || BRANDS[0];
+const brandB = BRANDS.find(b => b.slug === comp.brandBSlug) || BRANDS[1];
+
+const breadcrumbs = [
+  { name: '首页', url: '/' },
+  { name: '品牌横向对比', url: '/compare/' },
+  { name: `${brandA.name} vs ${brandB.name}`, url: `/compare/${comp.slug}/` }
+];
+
+const compareSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'Article',
+  'headline': comp.title,
+  'description': comp.verdict,
+  'author': {
+    '@type': 'Organization',
+    'name': 'chatgpt指南评测实验室'
+  },
+  'publisher': {
+    '@type': 'Organization',
+    'name': 'chatgpt指南',
+    'url': 'https://chatgptzhinan.homes'
+  }
+};
+---
+
+<BaseLayout
+  title={`${comp.title} | chatgpt指南`}
+  description={comp.verdict}
+  canonical={`https://chatgptzhinan.homes/compare/${comp.slug}/`}
+  breadcrumbs={breadcrumbs}
+  schema={compareSchema}
+>
+  <article class="max-w-4xl mx-auto py-8 px-4 sm:px-6 space-y-10">
+
+    <!-- Hero Header -->
+    <header class="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 shadow-sm space-y-6">
+      <div class="flex items-center gap-2">
+        <span class="px-3 py-1 rounded-full bg-emerald-50 text-emerald-800 text-xs font-semibold border border-emerald-200">
+          ⚖️ 官方同台对比实测
+        </span>
+        <span class="text-xs font-mono text-slate-400">实测基线：2026年11月晚高峰</span>
+      </div>
+
+      <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900 leading-tight">
+        {comp.title}
+      </h1>
+
+      <!-- Face-off Visual Banner -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-slate-50 p-4 sm:p-6 rounded-2xl border border-slate-100">
+        
+        <!-- Brand A Card -->
+        <div class="bg-white border border-slate-200 rounded-xl p-4 flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <div class="relative w-12 h-12 flex-shrink-0">
+              <img src={brandA.logo} alt={brandA.name} class="w-12 h-12 rounded-xl object-contain bg-slate-50 border p-1" onerror="this.style.display='none'; if(this.nextElementSibling) this.nextElementSibling.style.display='flex';" />
+              <div class="hidden w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 text-white font-bold text-lg items-center justify-center border border-emerald-400 select-none">
+                {brandA.name.slice(0, 1)}
+              </div>
+            </div>
+            <div>
+              <div class="font-bold text-slate-900 text-base">{brandA.name}</div>
+              <div class="text-xs text-slate-400">{brandA.lineTypes[0]}</div>
+            </div>
+          </div>
+          <div class="text-right">
+            <div class="text-xs font-bold text-amber-600 bg-amber-50 px-2 py-0.5 rounded border border-amber-200">★ {brandA.rating.toFixed(1)}</div>
+            <span class="text-[11px] text-slate-400 block mt-1">{brandA.entryPrice}</span>
+          </div>
+        </div>
+
+        <!-- Brand B Card -->
+        <div class="bg-white border border-slate-200 rounded-xl p-4 flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <div class="relative w-12 h-12 flex-shrink-0">
+              <img src={brandB.logo} alt={brandB.name} class="w-12 h-12 rounded-xl object-contain bg-slate-50 border p-1" onerror="this.style.display='none'; if(this.nextElementSibling) this.nextElementSibling.style.display='flex';" />
+              <div class="hidden w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 text-white font-bold text-lg items-center justify-center border border-blue-400 select-none">
+                {brandB.name.slice(0, 1)}
+              </div>
+            </div>
+            <div>
+              <div class="font-bold text-slate-900 text-base">{brandB.name}</div>
+              <div class="text-xs text-slate-400">{brandB.lineTypes[0]}</div>
+            </div>
+          </div>
+          <div class="text-right">
+            <div class="text-xs font-bold text-amber-600 bg-amber-50 px-2 py-0.5 rounded border border-amber-200">★ {brandB.rating.toFixed(1)}</div>
+            <span class="text-[11px] text-slate-400 block mt-1">{brandB.entryPrice}</span>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Concise Verdict -->
+      <div class="rounded-2xl bg-emerald-50/80 border border-emerald-200/80 p-5 space-y-2">
+        <div class="flex items-center gap-2 text-emerald-800 font-bold text-sm">
+          <span>⚡ 简明比较结论（Executive Verdict）</span>
+        </div>
+        <p class="text-xs sm:text-sm text-slate-700 leading-relaxed">
+          {comp.verdict}
+        </p>
+      </div>
+    </header>
+
+    <!-- Side-by-Side Parameter Matrix -->
+    <section class="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 space-y-6">
+      <div class="border-b border-slate-100 pb-4">
+        <h2 class="text-xl font-bold text-slate-900 flex items-center gap-2">
+          <span>📊</span> 一、同口径核心参数全面对比大表
+        </h2>
+        <p class="text-xs text-slate-500 mt-1">
+          基于晚高峰测速、工单测试与资费模型进行的量化指标比对。
+        </p>
+      </div>
+
+      <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse text-xs">
+          <thead>
+            <tr class="bg-slate-50 border-b border-slate-200 text-slate-700">
+              <th class="py-3 px-4 font-semibold">对比指标</th>
+              <th class="py-3 px-4 font-bold text-emerald-800">{brandA.name}</th>
+              <th class="py-3 px-4 font-bold text-blue-800">{brandB.name}</th>
+              <th class="py-3 px-4 font-semibold text-slate-500 text-center">优势判定</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-100 text-slate-600">
+            {comp.specComparison.map((row) => (
+              <tr class="hover:bg-slate-50/50">
+                <td class="py-3 px-4 font-medium text-slate-900">{row.metric}</td>
+                <td class={`py-3 px-4 ${row.winner === 'A' ? 'font-bold text-emerald-700 bg-emerald-50/30' : ''}`}>{row.brandAValue}</td>
+                <td class={`py-3 px-4 ${row.winner === 'B' ? 'font-bold text-blue-700 bg-blue-50/30' : ''}`}>{row.brandBValue}</td>
+                <td class="py-3 px-4 text-center font-bold">
+                  {row.winner === 'A' ? <span class="text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded">{brandA.name} 胜出</span> : row.winner === 'B' ? <span class="text-blue-600 bg-blue-50 px-2 py-0.5 rounded">{brandB.name} 胜出</span> : <span class="text-slate-400">平手 / 相当</span>}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Deep Differences Analysis -->
+    <section class="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 space-y-6">
+      <h2 class="text-xl font-bold text-slate-900 flex items-center gap-2">
+        <span>🔍</span> 二、核心差异深度拆解
+      </h2>
+
+      <div class="space-y-4">
+        {comp.keyDifferences.map((diff, idx) => (
+          <div class="border border-slate-200 rounded-2xl p-5 bg-slate-50/50 space-y-2">
+            <h3 class="font-bold text-slate-900 text-sm flex items-center gap-2">
+              <span class="w-5 h-5 rounded-full bg-slate-900 text-white text-xs flex items-center justify-center font-mono">{idx + 1}</span>
+              <span>{diff.title}</span>
+            </h3>
+            <p class="text-xs sm:text-sm text-slate-600 leading-relaxed pl-7">
+              {diff.description}
+            </p>
+          </div>
+        ))}
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 pt-4 text-xs text-slate-600 leading-relaxed">
+        <div class="bg-slate-50 p-4 rounded-xl space-y-1.5 border border-slate-200">
+          <strong class="text-slate-900 block text-xs">💰 价格与流量成本</strong>
+          <p>{comp.pricingAnalysis}</p>
+        </div>
+        <div class="bg-slate-50 p-4 rounded-xl space-y-1.5 border border-slate-200">
+          <strong class="text-slate-900 block text-xs">🌐 专线架构与晚高峰</strong>
+          <p>{comp.lineAnalysis}</p>
+        </div>
+        <div class="bg-slate-50 p-4 rounded-xl space-y-1.5 border border-slate-200">
+          <strong class="text-slate-900 block text-xs">📱 客户端使用门槛</strong>
+          <p>{comp.clientAnalysis}</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Target Audience Match -->
+    <section class="bg-slate-900 text-white rounded-3xl p-6 sm:p-8 space-y-6">
+      <h2 class="text-xl font-bold text-emerald-400 flex items-center gap-2">
+        <span>🎯</span> 三、用户选型画像：你应该选谁？
+      </h2>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        
+        <!-- Choose A -->
+        <div class="bg-slate-800/80 border border-slate-700 rounded-2xl p-5 space-y-3">
+          <div class="flex items-center gap-2 text-emerald-400 font-bold text-sm">
+            <span>👉 优先选择 {brandA.name} 的情况：</span>
+          </div>
+          <ul class="text-xs text-slate-300 space-y-2 leading-relaxed">
+            {comp.sceneGuidance.recommendedForA.map((item) => (
+              <li class="flex items-start gap-2">
+                <span class="text-emerald-400 font-bold">•</span>
+                <span>{item}</span>
+              </li>
+            ))}
+          </ul>
+          <div class="pt-2">
+            <a
+              href={`/reviews/${brandA.slug}/`}
+              class="inline-block text-xs font-semibold text-emerald-400 hover:text-emerald-300 underline"
+            >
+              阅读 {brandA.name} 独立深度评测 &rarr;
+            </a>
+          </div>
+        </div>
+
+        <!-- Choose B -->
+        <div class="bg-slate-800/80 border border-slate-700 rounded-2xl p-5 space-y-3">
+          <div class="flex items-center gap-2 text-blue-400 font-bold text-sm">
+            <span>👉 优先选择 {brandB.name} 的情况：</span>
+          </div>
+          <ul class="text-xs text-slate-300 space-y-2 leading-relaxed">
+            {comp.sceneGuidance.recommendedForB.map((item) => (
+              <li class="flex items-start gap-2">
+                <span class="text-blue-400 font-bold">•</span>
+                <span>{item}</span>
+              </li>
+            ))}
+          </ul>
+          <div class="pt-2">
+            <a
+              href={`/reviews/${brandB.slug}/`}
+              class="inline-block text-xs font-semibold text-blue-400 hover:text-blue-300 underline"
+            >
+              阅读 {brandB.name} 独立深度评测 &rarr;
+            </a>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Bottom Actions for Both Brands -->
+    <section class="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 space-y-6">
+      <h2 class="text-lg font-bold text-slate-900 text-center">
+        官方入口与套餐详情直达
+      </h2>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+        
+        <!-- Brand A CTA -->
+        <div class="border border-slate-200 rounded-2xl p-5 space-y-3 text-center bg-slate-50">
+          <h3 class="font-bold text-slate-900 text-base">{brandA.name}</h3>
+          <p class="text-xs text-slate-500">起步套餐 {brandA.entryPrice} · {brandA.lineTypes[0]}</p>
+          {brandA.coupon && (
+            <div
+              class="text-xs text-amber-800 bg-amber-50 hover:bg-amber-100 px-2 py-1 rounded border border-amber-200 inline-block font-mono cursor-pointer select-none transition-colors"
+              data-copy-coupon={brandA.coupon}
+              title="点击一键复制专属立减优惠码"
+            >
+              优惠码: <strong>{brandA.coupon}</strong>
+              <span class="text-[10px] text-amber-700 bg-amber-100 px-1 py-0.2 rounded ml-1">📋 复制</span>
+            </div>
+          )}
+          <div class="pt-2 space-y-2">
+            <a
+              href={`/go/${brandA.slug}/`}
+              target="_blank"
+              rel="nofollow sponsored noopener"
+              class="block w-full py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs transition-colors"
+            >
+              访问 {brandA.name} 官网开通 &rarr;
+            </a>
+            <a
+              href={`/brands/${brandA.slug}/`}
+              class="block w-full py-2 rounded-xl border border-slate-300 hover:bg-white text-slate-700 text-xs font-medium transition-colors"
+            >
+              查看套餐价格与优惠详情
+            </a>
+          </div>
+        </div>
+
+        <!-- Brand B CTA -->
+        <div class="border border-slate-200 rounded-2xl p-5 space-y-3 text-center bg-slate-50">
+          <h3 class="font-bold text-slate-900 text-base">{brandB.name}</h3>
+          <p class="text-xs text-slate-500">起步套餐 {brandB.entryPrice} · {brandB.lineTypes[0]}</p>
+          {brandB.coupon && (
+            <div
+              class="text-xs text-amber-800 bg-amber-50 hover:bg-amber-100 px-2 py-1 rounded border border-amber-200 inline-block font-mono cursor-pointer select-none transition-colors"
+              data-copy-coupon={brandB.coupon}
+              title="点击一键复制专属立减优惠码"
+            >
+              优惠码: <strong>{brandB.coupon}</strong>
+              <span class="text-[10px] text-amber-700 bg-amber-100 px-1 py-0.2 rounded ml-1">📋 复制</span>
+            </div>
+          )}
+          <div class="pt-2 space-y-2">
+            <a
+              href={`/go/${brandB.slug}/`}
+              target="_blank"
+              rel="nofollow sponsored noopener"
+              class="block w-full py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs transition-colors"
+            >
+              访问 {brandB.name} 官网开通 &rarr;
+            </a>
+            <a
+              href={`/brands/${brandB.slug}/`}
+              class="block w-full py-2 rounded-xl border border-slate-300 hover:bg-white text-slate-700 text-xs font-medium transition-colors"
+            >
+              查看套餐价格与优惠详情
+            </a>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="text-[11px] text-slate-400 text-center leading-relaxed pt-2">
+        {comp.limitationsNotice}
+      </div>
+    </section>
+
+    <!-- Navigation Footer -->
+    <div class="flex items-center justify-between text-xs text-slate-500 pt-4 border-t border-slate-200">
+      <a href="/compare/" class="hover:text-emerald-600 transition-colors">&larr; 返回品牌横向对比中心</a>
+      <a href="/reviews/" class="hover:text-emerald-600 transition-colors">前往品牌深度评测中心 &rarr;</a>
+    </div>
+
+    <AffiliateDisclaimer />
+
+  </article>
+</BaseLayout>

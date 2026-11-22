@@ -1,0 +1,442 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { BRANDS, MAIN_PUSH_BRAND } from '@/data/brands';
+import { getTopicBySlug } from '@/data/topics';
+import AffiliateDisclaimer from '@/components/brands/AffiliateDisclaimer.astro';
+
+const topic = getTopicBySlug('tutorials')!;
+
+const breadcrumbs = [
+  { name: '首页', url: '/' },
+  { name: '使用教程', url: '/tutorials/' }
+];
+
+const faqs = [
+  { q: '从零开始配置科学上网，最快需要多久？', a: '对于新手而言，按标准指引操作通常仅需 3-5 分钟：① 注册靠谱机场（如光速云）购买月付套餐获取订阅链接；② 根据你的设备下载推荐客户端（Windows 下载 Clash Verge Rev，安卓下载 Clash Meta，iOS 下载 Shadowrocket）；③ 粘贴订阅链接更新节点；④ 勾选「规则模式」并打开系统代理开关即可。' },
+  { q: '什么是「规则模式」与「全局模式」？为什么强烈建议用规则模式？', a: '「全局模式（Global）」会将你设备的所有网络请求（包括访问百度、淘宝、微信支付、网银）强制通过境外节点中转，不仅浪费机场流量，还会导致国内网站变慢、甚至触发国内网银异地风控封号；「规则模式（Rule）」则内置智能分流规则表，访问国内网站自动直连不消耗流量，只有访问 Google、ChatGPT 等海外站点时才走代理，既快又安全。' },
+  { q: '我的订阅链接可以借给朋友一起使用吗？', a: '可以，但必须注意机场套餐的「同时在线设备数限制」与「总流量额度」。绝大多数机场限制同时在线 2-5 台设备，若超标会导致所有人频繁断连甚至触发防倒卖风控拦截。严禁将订阅链接公开张贴在网络论坛或公共群组中。' },
+  { q: '为什么命令行终端（Terminal/CMD）无法走代理访问 GitHub？', a: '因为大部分代理客户端默认开启的「系统代理」只接管遵循 Windows/Mac 系统 HTTP 代理接口的浏览器软件，CMD、PowerShell、Git 终端默认不走系统代理。解决方法是在客户端中开启「TUN 模式（虚拟网卡）」，或在终端手动输入 export http_proxy 端口命令。' },
+  { q: '开启 TUN 模式提示失败或没有网络怎么办？', a: 'TUN 模式需要在系统底层注册虚拟网络适配器驱动。在 Windows 上首次使用必须右键客户端图标选择「以管理员身份运行」，并确保在设置中安装了 Service Mode（服务模式）；若依然无网，检查是否安装了冲突的杀毒软件或老旧 VPN 驱动。' },
+  { q: '为什么很多机场不提供自研客户端，只提供订阅链接？', a: '因为开发维护各平台的独立软件成本极高，且自研闭源客户端可能存在安全隐患。使用全网开源、经过数万人安全审计的通用客户端（如 Clash Verge Rev、v2rayN、Shadowrocket），配合第三方标准订阅，是目前行业公认最安全、最灵活、功能最强大的主流方案。' },
+  { q: '光速云支持哪些客户端的一键导入？', a: '光速云后台针对新手提供了全方位的订阅支持：不仅拥有一键导入 Clash（Clash Verge / Clash Meta / Clash for Windows）、一键导入 Shadowrocket（小火箭）、v2rayN/v2rayNG 的直连协议，还针对小白用户提供了 Windows 和安卓自研的一键登录直连客户端，免除一切手动配置烦恼。' },
+  { q: '导入订阅后显示「Subscription download timed out」怎么解决？', a: '这通常是因为本地宽带阻断了机场的订阅域名。解决办法：① 尝试切换手机 5G 热点重新点击下载；② 若客户端中有旧节点可用，可先开启旧代理后再点更新；③ 登录机场用户中心手动下载本地 YAML 配置文件导入。' }
+];
+
+const schema = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'CollectionPage',
+    'name': '2026 科学上网与客户端配置实战指南：从入门到精通',
+    'description': topic.description,
+    'url': 'https://chatgptzhinan.homes/tutorials/'
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    'mainEntity': faqs.map(f => ({
+      '@type': 'Question',
+      'name': f.q,
+      'acceptedAnswer': {
+        '@type': 'Answer',
+        'text': f.a
+      }
+    }))
+  }
+];
+---
+
+<BaseLayout
+  title="科学上网实战使用教程｜订阅导入、分流规则配置、TUN模式与多平台保姆级指南"
+  description="面向零基础新手的全平台配置总入口：详解 Windows、Android、iOS、macOS 客户端下载与订阅导入，深度拆解规则模式、TUN 虚拟网卡与国内外智能分流。"
+  canonical="https://chatgptzhinan.homes/tutorials/"
+  breadcrumbs={breadcrumbs}
+  schema={schema}
+>
+
+  <article class="max-w-4xl mx-auto py-6 space-y-10">
+    
+    <!-- Hero Header -->
+    <header class="space-y-4">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 text-xs font-semibold">
+        <span>📖 保姆级实操教程</span>
+        <span>·</span>
+        <span>Pillar Page 全平台使用中心</span>
+      </div>
+
+      <h1 class="text-3xl sm:text-5xl font-extrabold text-slate-900 tracking-tight leading-tight">
+        科学上网实战使用教程：<br class="hidden sm:inline" />
+        <span class="bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-600 bg-clip-text text-transparent">从零开始订阅导入、智能分流与 TUN 模式</span>
+      </h1>
+
+      <!-- Answer-First Box -->
+      <div class="rounded-2xl bg-gradient-to-r from-emerald-50 via-teal-50 to-cyan-50 border border-emerald-200 p-6 shadow-sm my-6 space-y-3">
+        <div class="flex items-center gap-2 text-emerald-900 font-bold text-sm">
+          <span>⚡ 核心实操结论先行（Quick Tutorial Takeaway）</span>
+        </div>
+        <p class="text-sm sm:text-base text-slate-800 leading-relaxed font-medium">
+          <strong>搞定外网访问的核心四步曲：</strong> ① 选对客户端（Windows 认准 <strong>Clash Verge Rev</strong>，Android 认准 <strong>Clash Meta</strong>，iOS 认准 <strong>Shadowrocket</strong>）；② 在服务商（如光速云）后台<strong>一键复制/导入订阅链接</strong>；③ 务必将路由模式设置为<strong>「规则模式（Rule）」</strong>（避免国内网站卡顿及流量浪费）；④ 针对游戏和终端命令行开启<strong>「TUN 虚拟网卡模式」</strong>。
+        </p>
+        <div class="pt-3 border-t border-emerald-200/60 flex flex-wrap items-center justify-between gap-2 text-xs text-emerald-800">
+          <span>适用平台：Windows 10/11 · macOS · Android · iOS / iPadOS</span>
+          <span>更新时间：2026 年 11 月 21 日</span>
+        </div>
+      </div>
+
+      <!-- Jump Navigation -->
+      <nav class="bg-white border border-slate-200 rounded-2xl p-4 sm:p-5 shadow-xs">
+        <div class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">章节导航 · 快速定位实操步骤</div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 text-xs">
+          <a href="#four-steps-roadmap" class="text-slate-700 hover:text-emerald-600 py-1">一、新手通关：4 步极简标准化流程 &rarr;</a>
+          <a href="#platform-guides" class="text-slate-700 hover:text-emerald-600 py-1">二、四大操作系统主流配置路线 &rarr;</a>
+          <a href="#proxy-modes" class="text-slate-700 hover:text-emerald-600 py-1">三、代理模式拆解：规则 vs 全局 vs 直连 &rarr;</a>
+          <a href="#tun-mode-guide" class="text-slate-700 hover:text-emerald-600 py-1">四、TUN 虚拟网卡深度配置与游戏加速 &rarr;</a>
+          <a href="#dns-and-rules" class="text-slate-700 hover:text-emerald-600 py-1">五、智能分流与防 DNS 污染进阶 &rarr;</a>
+          <a href="#validation-checklist" class="text-slate-700 hover:text-emerald-600 py-1">六、连接成功三段式终极验证清单 &rarr;</a>
+          <a href="#tutorials-subtopics" class="text-slate-700 hover:text-emerald-600 py-1">七、使用教程 8 大细分二级中心 &rarr;</a>
+          <a href="#tutorials-faq" class="text-slate-700 hover:text-emerald-600 py-1">八、实操高频常见疑问（FAQ） &rarr;</a>
+        </div>
+      </nav>
+    </header>
+
+    <!-- Section 1: Standard 4 Steps Roadmap -->
+    <section id="four-steps-roadmap" class="space-y-4 pt-4">
+      <h2 class="text-2xl font-bold text-slate-900 tracking-tight">
+        一、新手通关：4 步极简标准化流程
+      </h2>
+      <p class="text-xs sm:text-sm text-slate-600 leading-relaxed">
+        无论你使用何种设备或系统，现代科学上网已经完全标准化。任何复杂操作都可以归纳为以下 4 个标准阶段：
+      </p>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 my-4">
+        <!-- Step 1 -->
+        <div class="p-4 rounded-xl bg-white border border-slate-200 shadow-xs space-y-2">
+          <div class="w-7 h-7 rounded-lg bg-emerald-100 text-emerald-800 font-bold flex items-center justify-center text-xs font-mono">
+            01
+          </div>
+          <div class="font-bold text-slate-900 text-sm">获取订阅服务</div>
+          <p class="text-xs text-slate-500 leading-relaxed">
+            在正规机场（如光速云）注册账户并选购月付套餐，在用户中心找到属于你的「订阅链接」。
+          </p>
+        </div>
+
+        <!-- Step 2 -->
+        <div class="p-4 rounded-xl bg-white border border-slate-200 shadow-xs space-y-2">
+          <div class="w-7 h-7 rounded-lg bg-teal-100 text-teal-800 font-bold flex items-center justify-center text-xs font-mono">
+            02
+          </div>
+          <div class="font-bold text-slate-900 text-sm">安装官方客户端</div>
+          <p class="text-xs text-slate-500 leading-relaxed">
+            根据操作系统下载对应的纯净版客户端（认准开源 GitHub Releases 原版，切勿轻信搜索站第三方包）。
+          </p>
+        </div>
+
+        <!-- Step 3 -->
+        <div class="p-4 rounded-xl bg-white border border-slate-200 shadow-xs space-y-2">
+          <div class="w-7 h-7 rounded-lg bg-cyan-100 text-cyan-800 font-bold flex items-center justify-center text-xs font-mono">
+            03
+          </div>
+          <div class="font-bold text-slate-900 text-sm">一键导入与更新</div>
+          <p class="text-xs text-slate-500 leading-relaxed">
+            点击机场后台的「一键导入」，或在客户端配置界面粘贴订阅 URL，下载并更新海内外节点集群。
+          </p>
+        </div>
+
+        <!-- Step 4 -->
+        <div class="p-4 rounded-xl bg-white border border-slate-200 shadow-xs space-y-2">
+          <div class="w-7 h-7 rounded-lg bg-blue-100 text-blue-800 font-bold flex items-center justify-center text-xs font-mono">
+            04
+          </div>
+          <div class="font-bold text-slate-900 text-sm">规则分流与开启</div>
+          <p class="text-xs text-slate-500 leading-relaxed">
+            选择一个低延迟节点（首选日本或香港），勾选「规则模式（Rule）」，打开「系统代理」开关即可畅游。
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 2: Platform Guides -->
+    <section id="platform-guides" class="space-y-4 pt-6 border-t border-slate-200 prose prose-slate max-w-none text-xs sm:text-sm text-slate-700 leading-relaxed">
+      <h2 class="text-2xl font-bold text-slate-900 tracking-tight not-prose">
+        二、四大主流操作系统配置实操详解
+      </h2>
+
+      <div class="not-prose space-y-4 my-4">
+        <!-- Windows Guide -->
+        <div class="p-5 rounded-2xl bg-white border border-slate-200 space-y-3">
+          <div class="flex items-center justify-between border-b border-slate-100 pb-2">
+            <span class="font-bold text-slate-900 text-base flex items-center gap-2">
+              <span>💻 Windows 10 / 11 最佳配置路线</span>
+              <span class="text-xs font-normal text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded">主力推荐：Clash Verge Rev</span>
+            </span>
+            <span class="text-xs text-slate-400">耗时约 3 分钟</span>
+          </div>
+          <ol class="list-decimal list-inside space-y-1.5 text-xs text-slate-600 leading-relaxed">
+            <li><strong>安装依赖：</strong> 安装微软官方 <code>Microsoft Edge WebView2 Runtime</code>（若系统已内置则跳过）。</li>
+            <li><strong>下载客户端：</strong> 前往 GitHub 下载 <code>Clash.Verge_x64-setup.exe</code>，安装并运行。</li>
+            <li><strong>导入订阅：</strong> 切换至左侧「订阅（Profiles）」标签页，将机场订阅 URL 粘贴至输入框，点击「导入（Import）」。</li>
+            <li><strong>选择节点：</strong> 切换至「代理（Proxies）」页面，在「PROXY」策略组中选中你心仪的节点（例如：<code>光速云-日本专线01</code>）。</li>
+            <li><strong>打开代理：</strong> 点击主界面左上角「系统代理（System Proxy）」拨动开关，右下角任务栏小猫图标点亮即代表生效。</li>
+          </ol>
+        </div>
+
+        <!-- Android Guide -->
+        <div class="p-5 rounded-2xl bg-white border border-slate-200 space-y-3">
+          <div class="flex items-center justify-between border-b border-slate-100 pb-2">
+            <span class="font-bold text-slate-900 text-base flex items-center gap-2">
+              <span>📱 Android（安卓手机与平板）最佳配置路线</span>
+              <span class="text-xs font-normal text-teal-700 bg-teal-50 px-2 py-0.5 rounded">主力推荐：Clash Meta / FlClash</span>
+            </span>
+            <span class="text-xs text-slate-400">耗时约 2 分钟</span>
+          </div>
+          <ol class="list-decimal list-inside space-y-1.5 text-xs text-slate-600 leading-relaxed">
+            <li><strong>安装 APK：</strong> 下载 <code>cmfa-universal-release.apk</code> 或 <code>FlClash.apk</code> 完成安装。</li>
+            <li><strong>添加配置：</strong> 打开软件进入「配置」菜单，点击右上角「+」号选择「从 URL 导入」，填入订阅链接并保存。</li>
+            <li><strong>防后台被杀设置（关键）：</strong> 进入手机系统「设置 → 应用管理 → Clash」，将省电策略改为<strong>「无限制 / 允许后台高耗电」</strong>，防止切到微信时梯子被系统强杀。</li>
+            <li><strong>启动连接：</strong> 返回首页点击顶部的「启动」按钮，在系统弹出的“网络连接请求”对话框中点击「确定」放行 VPN 权限。</li>
+          </ol>
+        </div>
+
+        <!-- iOS Guide -->
+        <div class="p-5 rounded-2xl bg-white border border-slate-200 space-y-3">
+          <div class="flex items-center justify-between border-b border-slate-100 pb-2">
+            <span class="font-bold text-slate-900 text-base flex items-center gap-2">
+              <span>🍎 iOS（iPhone / iPad）最佳配置路线</span>
+              <span class="text-xs font-normal text-cyan-700 bg-cyan-50 px-2 py-0.5 rounded">主力推荐：Shadowrocket（小火箭）</span>
+            </span>
+            <span class="text-xs text-slate-400">海外 App Store 专属</span>
+          </div>
+          <ol class="list-decimal list-inside space-y-1.5 text-xs text-slate-600 leading-relaxed">
+            <li><strong>获取软件：</strong> 登录外区（美区/港区）Apple ID，在 App Store 购买下载 Shadowrocket（售价 2.99 美元）。</li>
+            <li><strong>一键导入：</strong> 使用 Safari 浏览器登录机场后台，点击「一键导入 Shadowrocket」，系统会自动唤醒小火箭并完成节点同步。</li>
+            <li><strong>全局路由设置：</strong> 在小火箭首页下方将「全局路由」设置为<strong>「配置」</strong>（即智能分流）。</li>
+            <li><strong>开启代理：</strong> 开启顶部主开关，首次启动需输入 iPhone 锁屏密码允许系统添加 VPN Configurations。</li>
+          </ol>
+        </div>
+
+        <!-- macOS Guide -->
+        <div class="p-5 rounded-2xl bg-white border border-slate-200 space-y-3">
+          <div class="flex items-center justify-between border-b border-slate-100 pb-2">
+            <span class="font-bold text-slate-900 text-base flex items-center gap-2">
+              <span>🍏 macOS（苹果电脑）最佳配置路线</span>
+              <span class="text-xs font-normal text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded">主力推荐：Clash Verge Rev for Mac</span>
+            </span>
+            <span class="text-xs text-slate-400">支持 Intel / Apple Silicon M芯片</span>
+          </div>
+          <ol class="list-decimal list-inside space-y-1.5 text-xs text-slate-600 leading-relaxed">
+            <li><strong>选准芯片架构：</strong> M1/M2/M3/M4 系列 Mac 请下载 <code>aarch64.dmg</code>；老款 Intel 处理器请下载 <code>x64.dmg</code>。</li>
+            <li><strong>安全放行：</strong> 首次打开若提示“无法验证开发者”，在 Mac「系统设置 → 隐私与安全性」最下方点击「仍要打开」。</li>
+            <li><strong>设置系统代理：</strong> 导入订阅后，在 Verge 设置中勾选「系统代理」，通知栏图标变色即代表网络接管成功。</li>
+          </ol>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 3: Proxy Modes Comparison -->
+    <section id="proxy-modes" class="space-y-4 pt-6 border-t border-slate-200 prose prose-slate max-w-none text-xs sm:text-sm text-slate-700 leading-relaxed">
+      <h2 class="text-2xl font-bold text-slate-900 tracking-tight not-prose">
+        三、三大代理模式深度对比：规则 vs 全局 vs 直连
+      </h2>
+      <p>
+        在所有现代代理客户端中，模式选择直接决定了流量走向与安全性：
+      </p>
+
+      <div class="not-prose overflow-x-auto my-4">
+        <table class="w-full text-left border-collapse border border-slate-200 text-xs">
+          <thead>
+            <tr class="bg-slate-100 text-slate-800 font-bold">
+              <th class="p-3 border border-slate-200">代理模式</th>
+              <th class="p-3 border border-slate-200">流量流向规则</th>
+              <th class="p-3 border border-slate-200">消耗机场流量</th>
+              <th class="p-3 border border-slate-200">适用典型场景</th>
+              <th class="p-3 border border-slate-200">风险与副作用</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-200">
+            <tr>
+              <td class="p-3 font-bold text-emerald-700 bg-emerald-50">规则模式（Rule）<br/><span class="text-[10px] font-normal">（95% 用户首选）</span></td>
+              <td class="p-3 text-slate-700">国内网站（百度/微信/淘宝）直连；国外被阻断网站（Google/ChatGPT）走代理。</td>
+              <td class="p-3 text-emerald-600 font-semibold">仅消耗境外流量（极度节省）</td>
+              <td class="p-3 text-slate-700">日常办公、学习、追剧、全天候后台挂机常驻。</td>
+              <td class="p-3 text-slate-500">极少数生僻外网域名可能未被规则收录。</td>
+            </tr>
+            <tr>
+              <td class="p-3 font-bold text-blue-700 bg-blue-50">全局模式（Global）</td>
+              <td class="p-3 text-slate-700">设备发出的所有流量，毫无例外全部强行经由境外节点绕行。</td>
+              <td class="p-3 text-red-600 font-semibold">消耗所有网络流量（消耗极快）</td>
+              <td class="p-3 text-slate-700">临时访问规则库未收录的生僻网站、需要强制统一出口 IP 排查问题。</td>
+              <td class="p-3 text-red-600">国内网页变慢，网银、微信可能异地风控。</td>
+            </tr>
+            <tr>
+              <td class="p-3 font-bold text-slate-700 bg-slate-50">直连模式（Direct）</td>
+              <td class="p-3 text-slate-700">所有网络请求直接通过本地家庭宽带发起，不经过任何代理服务器。</td>
+              <td class="p-3 text-slate-500">0 消耗</td>
+              <td class="p-3 text-slate-700">完全不需要科学上网、下载国内大体积游戏补丁。</td>
+              <td class="p-3 text-slate-500">无法访问任何海外被阻断网站。</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Section 4: TUN Mode Deep Dive -->
+    <section id="tun-mode-guide" class="space-y-4 pt-6 border-t border-slate-200 prose prose-slate max-w-none text-xs sm:text-sm text-slate-700 leading-relaxed">
+      <h2 class="text-2xl font-bold text-slate-900 tracking-tight not-prose">
+        四、TUN 虚拟网卡深度配置：打破系统代理的局限
+      </h2>
+      <p>
+        <strong>为什么普通系统代理无法接管所有流量？</strong><br />
+        系统代理（System Proxy）本质上只是在 Windows/macOS 注册表修改了 HTTP/HTTPS 端口变量。然而，很多现代化软件（例如：Steam 游戏大作、Git 命令行工具、Discord 语音通话、Node.js/Python 脚本）在发起网络请求时<strong>完全不读取系统代理配置</strong>，直接向网关发送 UDP/TCP 裸包，导致这些软件依然连不上外网。
+      </p>
+      <p>
+        <strong>TUN 模式的核心工作原理：</strong><br />
+        TUN 模式会在你的操作系统内核中创建一个名为 <code>Mihomo TUN</code> 的<strong>虚拟网络适配器</strong>，并将系统的默认网关指向该虚拟网卡。所有应用层发出的 IP 数据包无论协议类型，全部被强行捕获并送入客户端的分流内核，实现真正的<strong>系统级 100% 全流量透明代理</strong>。
+      </p>
+
+      <div class="not-prose bg-slate-900 text-slate-200 p-5 rounded-2xl border border-slate-800 space-y-2 text-xs font-mono my-4">
+        <div class="text-emerald-400 font-bold text-sm">Clash Verge Rev 开启 TUN 模式标准三步：</div>
+        <div>1. 打开设置（Settings） &rarr; 找到「服务模式（Service Mode）」 &rarr; 点击「安装（Install）」。</div>
+        <div>2. 安装完成后，服务模式指示灯会变为绿色「已激活（Active）」。</div>
+        <div>3. 开启「TUN 模式（Tun Mode）」开关，系统将自动接管包括命令提示符与游戏在内的所有网络通信。</div>
+      </div>
+    </section>
+
+    <!-- Section 5: Validation Checklist -->
+    <section id="validation-checklist" class="space-y-4 pt-6 border-t border-slate-200">
+      <h2 class="text-2xl font-bold text-slate-900 tracking-tight">
+        五、连接成功三段式终极验证清单
+      </h2>
+      <p class="text-xs sm:text-sm text-slate-600 leading-relaxed">
+        配置完成后不要盲目猜测网络是否正常，按以下三步法逐项验证，确保分流与连通性 100% 达标：
+      </p>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 my-4">
+        <div class="p-4 rounded-xl bg-white border border-slate-200 space-y-2">
+          <div class="font-bold text-slate-900 text-sm flex items-center gap-1.5">
+            <span class="text-emerald-600">✓</span> 验证 1：国内直连测试
+          </div>
+          <p class="text-xs text-slate-500 leading-relaxed">
+            打开 <code>ip138.com</code> 或 <code>baidu.com</code>。页面应毫秒级打开，且显示的 IP 必须依然是<strong>你本地的中国电信/联通/移动真实 IP</strong>（证明分流规则正常，未浪费流量）。
+          </p>
+        </div>
+
+        <div class="p-4 rounded-xl bg-white border border-slate-200 space-y-2">
+          <div class="font-bold text-slate-900 text-sm flex items-center gap-1.5">
+            <span class="text-blue-600">✓</span> 验证 2：海外代理与落地测试
+          </div>
+          <p class="text-xs text-slate-500 leading-relaxed">
+            打开 <code>ipinfo.io</code> 或 <code>google.com</code>。页面应正常打开，且显示的地理位置必须为你所选的节点所在国家（如 Japan/Tokyo），证明海外流量已接管。
+          </p>
+        </div>
+
+        <div class="p-4 rounded-xl bg-white border border-slate-200 space-y-2">
+          <div class="font-bold text-slate-900 text-sm flex items-center gap-1.5">
+            <span class="text-cyan-600">✓</span> 验证 3：业务兼容性深度测试
+          </div>
+          <p class="text-xs text-slate-500 leading-relaxed">
+            打开 <code>chatgpt.com</code>。若能顺畅展示登录对话界面且无 <code>1020 Access Denied</code> 报错，即代表节点具备纯净的原生 IP，全套配置圆满通关！
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 6: 8 Subtopics Navigation -->
+    <section id="tutorials-subtopics" class="space-y-4 pt-6 border-t border-slate-200">
+      <div class="flex items-center justify-between">
+        <h2 class="text-2xl font-bold text-slate-900 tracking-tight">
+          六、使用教程 8 大二级细分知识中心
+        </h2>
+        <span class="text-xs text-slate-500 font-mono">8 个实战主题深度覆盖</span>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        {topic.subtopics.map((sub) => (
+          <a
+            href={`/tutorials/${sub.slug}/`}
+            class="group block p-4 rounded-xl border border-slate-200 bg-white hover:border-emerald-500 hover:shadow-md transition-all space-y-2"
+          >
+            <div class="flex items-center justify-between">
+              <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-emerald-50 text-emerald-700 font-mono">
+                /{sub.slug}/
+              </span>
+              <span class="text-xs text-slate-400 group-hover:text-emerald-600 transition-colors">&rarr;</span>
+            </div>
+            <h3 class="text-xs sm:text-sm font-bold text-slate-900 group-hover:text-emerald-600 transition-colors line-clamp-1">
+              {sub.title.split('：')[0]}
+            </h3>
+            <p class="text-xs text-slate-500 line-clamp-2 leading-relaxed">
+              {sub.heroAnswer}
+            </p>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <!-- Commercial CTA: Guangsu Cloud -->
+    <section class="rounded-2xl bg-gradient-to-br from-emerald-900 via-teal-900 to-slate-900 text-white p-6 sm:p-8 shadow-xl space-y-4">
+      <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div class="space-y-1">
+          <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 text-xs font-semibold">
+            <span>⚡ 新手免配置友好服务商</span>
+          </div>
+          <h3 class="text-xl sm:text-2xl font-bold tracking-tight">
+            提供自研一键登录客户端与保姆级导入：光速云
+          </h3>
+          <p class="text-xs sm:text-sm text-slate-300 max-w-2xl leading-relaxed">
+            不想手动折腾订阅链接与转换？光速云针对 Windows、Android 用户提供了专属自研客户端，输入账号密码即可一键连接；同时全方位支持各大开源通用工具一键导入。
+          </p>
+        </div>
+        <div class="flex-shrink-0 flex flex-col gap-2 w-full sm:w-auto">
+          <a
+            href={`/go/${MAIN_PUSH_BRAND.slug}/`}
+            target="_blank"
+            rel="nofollow sponsored noopener"
+            class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white font-bold text-center text-xs sm:text-sm shadow-md transition-all whitespace-nowrap"
+          >
+            获取光速云新手特惠套餐 &rarr;
+          </a>
+          <span
+            class="text-[11px] text-slate-300 text-center font-mono cursor-pointer hover:text-white transition-colors select-none"
+            data-copy-coupon={MAIN_PUSH_BRAND.coupon || 'AMM'}
+            title="点击复制优惠码"
+          >
+            专属特惠折扣码：<span class="text-amber-400 font-bold bg-slate-800/80 px-1.5 py-0.5 rounded border border-amber-400/40">{MAIN_PUSH_BRAND.coupon}</span> 📋
+          </span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 7: FAQ Accordion -->
+    <section id="tutorials-faq" class="space-y-4 pt-6 border-t border-slate-200">
+      <div class="space-y-1">
+        <h2 class="text-2xl font-bold text-slate-900 tracking-tight">
+          七、实战使用教程高频疑问解答（FAQ）
+        </h2>
+        <p class="text-xs sm:text-sm text-slate-500">
+          汇集数千名新手最容易踩坑的配置误区，提供直截了当的标准化解法。
+        </p>
+      </div>
+
+      <div class="space-y-3">
+        {faqs.map((f, i) => (
+          <details class="group bg-white border border-slate-200 rounded-xl p-4 transition-all">
+            <summary class="flex items-center justify-between font-bold text-slate-900 cursor-pointer list-none text-xs sm:text-sm">
+              <span class="flex items-center gap-2">
+                <span class="text-emerald-600 font-mono">Q{i + 1}.</span>
+                <span>{f.q}</span>
+              </span>
+              <span class="text-slate-400 group-open:rotate-180 transition-transform ml-2">▼</span>
+            </summary>
+            <div class="mt-3 text-xs sm:text-sm text-slate-600 leading-relaxed pl-6 border-l-2 border-emerald-500">
+              {f.a}
+            </div>
+          </details>
+        ))}
+      </div>
+    </section>
+
+    <!-- Bottom Disclaimer -->
+    <AffiliateDisclaimer />
+
+  </article>
+
+</BaseLayout>

@@ -1,0 +1,406 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { BRANDS, MAIN_PUSH_BRAND } from '@/data/brands';
+import { getTopicBySlug } from '@/data/topics';
+import NetworkTopology from '@/components/charts/NetworkTopology.astro';
+import AffiliateDisclaimer from '@/components/brands/AffiliateDisclaimer.astro';
+
+const topic = getTopicBySlug('network')!;
+
+const breadcrumbs = [
+  { name: '首页', url: '/' },
+  { name: '线路与节点', url: '/network/' }
+];
+
+const faqs = [
+  { q: 'IEPL 专线与 IPLC 专线有何本质技术差异？', a: 'IPLC（International Private Leased Circuit）是传统的国际点对点纯物理租用线路，属于二层私网传输，成本极其高昂；IEPL（International Ethernet Private Line）则是基于二层以太网技术的国际专网，具备更强的数据包自愈和带宽弹性调度能力。两者均不经过中国大陆公网防火墙（GFW），抗封锁能力与稳定性相当，在实际体验中 IEPL 性价比更具优势。' },
+  { q: '为什么香港节点延迟最低，但打开 ChatGPT 却提示 Unsupported Country？', a: '香港地处华南沿海，物理光缆距离极短，沿海访问物理时延仅 15-30ms。然而 OpenAI 官方并未将中国香港列入其服务支持国家名单，因此所有香港落地出口 IP 在访问 chatgpt.com 时均会被官方直接拦截。日常交互推荐香港节点，但 AI 业务必须分流至日本或美国节点。' },
+  { q: '为什么白天测速几百兆，一到晚上 8 点（晚高峰）就断断续续转圈？', a: '这是典型使用了「公网中转」或「直连」廉价线路的特征。每晚 20:00-23:30 是国内国际公网互联出口的用网峰值，运营商会对非关键公网流量实施严厉的 QoS 丢包限速，公网丢包率常飙升至 15%-30%；而真正的 IEPL/IPLC 走的是企业级内网专线通道，完全避开公网拥塞，晚高峰丢包率恒定为 0%。' },
+  { q: '节点名称后面的「0.5x」或「2.0x」倍率到底代表什么？', a: '倍率代表流量消耗计费系数。若你使用 2.0x 节点看了一部 10GB 的 4K 电影，机场后台将实际扣除你 20GB 账户流量；反之使用 0.5x 节点只扣除 5GB。高倍率节点通常用于成本高昂的原生专线或高防节点，低倍率节点适合挂机大流量下载。' },
+  { q: '为什么游戏加速器必须选 IEPL 专线？', a: '实时竞技游戏对网络抖动（Jitter）和丢包率极其敏感。公网线路哪怕只有 1% 的丢包，也会导致 TCP 窗口重传、游戏内人物瞬移拉扯；IEPL 专线不仅物理延迟固定（如上海至东京约 28-35ms），而且网络抖动小于 2ms，具备工业级 SLA 可靠性。' },
+  { q: '原生住宅 IP（Residential）比普通机房 IP（Hosting）好在哪里？', a: '普通机房 IP 属于机房批量广播网段（如 AWS、DigitalOcean），极易被流媒体和 AI 平台标记拦截；原生住宅 IP 由当地正规电信运营商（如 AT&T、NTT）直接分配给家庭宽带，在 IP 信誉数据库中欺诈分为 0，能完美解锁当地流媒体、电商以及严苛的 AI 生产力工具。' },
+  { q: '测速软件显示的 Ping 只有 30ms，为什么打开外网依然很慢？', a: '客户端内测得的 Ping 通常只是你本地到国内中转入口服务器的握手延迟（仅代表前半段），并不反映中转机房到境外落地机房、以及落地机房到目标网站（后半段）的真实网络往返时间（RTT）与可用吞吐带宽。' },
+  { q: '光速云的线路网络是如何架构的？', a: '光速云全系标配高规格国内 BGP 智能多线中转入口，骨干网采用高冗余 IEPL/IPLC 闭环专线，境外落地涵盖香港、日本、新加坡、美西、欧洲等核心枢纽，并为重点节点配备了纯净原生出口，晚高峰实测表现极其稳定。' }
+];
+
+const schema = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'CollectionPage',
+    'name': '网络线路与节点技术科普指南：IEPL、IPLC 专线与节点选优',
+    'description': topic.description,
+    'url': 'https://chatgptzhinan.homes/network/'
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    'mainEntity': faqs.map(f => ({
+      '@type': 'Question',
+      'name': f.q,
+      'acceptedAnswer': {
+        '@type': 'Answer',
+        'text': f.a
+      }
+    }))
+  }
+];
+---
+
+<BaseLayout
+  title="网络线路与节点全解｜IEPL与IPLC专线原理、全球节点测速与倍率深度指南"
+  description="深度科普代理网络底层技术：拆解 IEPL 与 IPLC 物理专线抗封锁原理，对比香港、日本、新加坡、美国节点性能差异，揭秘晚高峰丢包与线路倍率计算规则。"
+  canonical="https://chatgptzhinan.homes/network/"
+  breadcrumbs={breadcrumbs}
+  schema={schema}
+>
+
+  <article class="max-w-4xl mx-auto py-6 space-y-10">
+    
+    <!-- Hero Header -->
+    <header class="space-y-4">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 text-blue-700 border border-blue-200 text-xs font-semibold">
+        <span>🌐 骨干网络技术观测</span>
+        <span>·</span>
+        <span>Pillar Page 线路底层架构</span>
+      </div>
+
+      <h1 class="text-3xl sm:text-5xl font-extrabold text-slate-900 tracking-tight leading-tight">
+        网络线路与节点技术全景：<br class="hidden sm:inline" />
+        <span class="bg-gradient-to-r from-blue-600 via-indigo-600 to-teal-600 bg-clip-text text-transparent">IEPL 专线原理、全球枢纽与倍率算法</span>
+      </h1>
+
+      <!-- Answer-First Box -->
+      <div class="rounded-2xl bg-gradient-to-r from-blue-50 via-indigo-50 to-teal-50 border border-blue-200 p-6 shadow-sm my-6 space-y-3">
+        <div class="flex items-center gap-2 text-blue-900 font-bold text-sm">
+          <span>⚡ 核心网络技术结论先行（Network Architecture Takeaway）</span>
+        </div>
+        <p class="text-sm sm:text-base text-slate-800 leading-relaxed font-medium">
+          <strong>线路架构决定了体验的下限，落地节点决定了业务兼容的上限。</strong> 预算充裕务必优先选择<strong>具备 BGP 多线入口 + IEPL/IPLC 跨境内网专线</strong>的服务商（晚高峰丢包率接近 0%，杜绝敏感期断连）。<strong>香港节点</strong>时延最低（15-30ms）但默认不支持 ChatGPT；<strong>日本节点</strong>（40-60ms）是亚太全能优选；<strong>美西节点</strong>（130-160ms）是 AI 生产力与全球白名单业务的终极压舱石。
+        </p>
+        <div class="pt-3 border-t border-blue-200/60 flex flex-wrap items-center justify-between gap-2 text-xs text-blue-800">
+          <span>数据标准：全球 MTR 路由双向跳数与 IPerf3 晚高峰吞吐实测</span>
+          <span>更新时间：2026 年 11 月 21 日</span>
+        </div>
+      </div>
+
+      <!-- Jump Navigation -->
+      <nav class="bg-white border border-slate-200 rounded-2xl p-4 sm:p-5 shadow-xs">
+        <div class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">章节导航 · 快速定位技术模块</div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 text-xs">
+          <a href="#iepl-vs-iplc" class="text-slate-700 hover:text-blue-600 py-1">一、IEPL vs IPLC 专线技术深度对比 &rarr;</a>
+          <a href="#network-topology" class="text-slate-700 hover:text-blue-600 py-1">二、端到端专线传输拓扑模型 &rarr;</a>
+          <a href="#transit-vs-direct" class="text-slate-700 hover:text-blue-600 py-1">三、公网中转 vs 直连与晚高峰拥塞 &rarr;</a>
+          <a href="#global-regions" class="text-slate-700 hover:text-blue-600 py-1">四、全球四大主流节点地区横向评测 &rarr;</a>
+          <a href="#latency-factors" class="text-slate-700 hover:text-blue-600 py-1">五、延迟、丢包与 TCP 窗口吞吐算力 &rarr;</a>
+          <a href="#multiplier-math" class="text-slate-700 hover:text-blue-600 py-1">六、线路倍率计费模型与省流量策略 &rarr;</a>
+          <a href="#network-subtopics" class="text-slate-700 hover:text-blue-600 py-1">七、线路与节点 8 大二级细分专题 &rarr;</a>
+          <a href="#network-faq" class="text-slate-700 hover:text-blue-600 py-1">八、线路与节点高频常见技术问答 &rarr;</a>
+        </div>
+      </nav>
+    </header>
+
+    <!-- Section 1: IEPL vs IPLC Deep Dive -->
+    <section id="iepl-vs-iplc" class="space-y-4 pt-4 prose prose-slate max-w-none text-xs sm:text-sm text-slate-700 leading-relaxed">
+      <h2 class="text-2xl font-bold text-slate-900 tracking-tight not-prose">
+        一、IEPL 与 IPLC：国际物理专线的底层架构差异
+      </h2>
+      <p>
+        在机场宣传文案中，「专线」是最常被提及的词汇，但极少有平台能讲清其背后的物理架构：
+      </p>
+
+      <div class="not-prose overflow-x-auto my-4">
+        <table class="w-full text-left border-collapse border border-slate-200 text-xs">
+          <thead>
+            <tr class="bg-slate-100 text-slate-800 font-bold">
+              <th class="p-3 border border-slate-200">对比维度</th>
+              <th class="p-3 border border-slate-200">IEPL（国际以太网专线）</th>
+              <th class="p-3 border border-slate-200">IPLC（国际私有租线）</th>
+              <th class="p-3 border border-slate-200">普通公网中转（Relay）</th>
+              <th class="p-3 border border-slate-200">公网直连（Direct）</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-200">
+            <tr>
+              <td class="p-3 font-semibold text-slate-900 bg-slate-50">物理链路性质</td>
+              <td class="p-3 text-emerald-700 font-semibold">二层以太网闭环专网，端到端隔离</td>
+              <td class="p-3 text-blue-700 font-semibold">点对点物理裸纤/SDH租用时隙</td>
+              <td class="p-3 text-slate-700">利用国内VPS将流量转发至境外VPS</td>
+              <td class="p-3 text-red-600 font-semibold">用户客户端直接跨越国际公网出口</td>
+            </tr>
+            <tr>
+              <td class="p-3 font-semibold text-slate-900 bg-slate-50">是否经过 GFW</td>
+              <td class="p-3 text-emerald-600 font-bold">否（内网光缆直接过境）</td>
+              <td class="p-3 text-emerald-600 font-bold">否（内网物理穿透）</td>
+              <td class="p-3 text-amber-600">是（中转机到落地机走国际公网）</td>
+              <td class="p-3 text-red-600 font-bold">是（全程受公网防火墙深度检测）</td>
+            </tr>
+            <tr>
+              <td class="p-3 font-semibold text-slate-900 bg-slate-50">晚高峰丢包率</td>
+              <td class="p-3 text-emerald-600 font-bold">&lt; 0.1%（极度平稳）</td>
+              <td class="p-3 text-emerald-600 font-bold">0%（企业级 SLA）</td>
+              <td class="p-3 text-amber-600">5% ~ 18%（视运营商出口拥堵）</td>
+              <td class="p-3 text-red-600 font-bold">15% ~ 35%+（严重卡顿断流）</td>
+            </tr>
+            <tr>
+              <td class="p-3 font-semibold text-slate-900 bg-slate-50">网络抖动 (Jitter)</td>
+              <td class="p-3 text-slate-700">&lt; 2 ms（非常适合外服竞技游戏）</td>
+              <td class="p-3 text-slate-700">&lt; 1 ms（极其稳定）</td>
+              <td class="p-3 text-amber-700">10 ~ 40 ms（偶发跳 Ping）</td>
+              <td class="p-3 text-red-700">50 ~ 200 ms（剧烈漂移）</td>
+            </tr>
+            <tr>
+              <td class="p-3 font-semibold text-slate-900 bg-slate-50">带宽单价成本</td>
+              <td class="p-3 text-slate-700">高（专线每 G 带宽月租昂贵）</td>
+              <td class="p-3 text-slate-700">极高（按 Mbps 长期合同计费）</td>
+              <td class="p-3 text-slate-700">中等（按云厂商公网流量计费）</td>
+              <td class="p-3 text-slate-700">极低（海外廉价机房廉价大带宽）</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>
+        <strong>结论：</strong> 对于日常翻墙与商务办公而言，<strong>IEPL 与 IPLC 的用户体验差异微乎其微</strong>。目前高端机场（如光速云）多以 IEPL 为主力，因为 IEPL 在具备内网不经过 GFW 的天然优势下，还支持运营商智能路由弹性扩容，即便某条海缆突发故障也能实现毫秒级自动倒换。
+      </p>
+    </section>
+
+    <!-- Section 2: Dark Observatory Component -->
+    <section id="network-topology" class="space-y-4 pt-6 border-t border-slate-200">
+      <h2 class="text-2xl font-bold text-slate-900 tracking-tight">
+        二、端到端内网专线闭环传输拓扑图
+      </h2>
+      <p class="text-xs sm:text-sm text-slate-600 leading-relaxed">
+        下图展示了以高规格旗舰（光速云）为代表的现代化专线网络全流程传输模型。数据从用户终端发出至目标网站响应，全程在可控加密隧道与物理内网中运行：
+      </p>
+
+      <NetworkTopology
+        brandName="示范标准专线（光速云骨干网）"
+        ingressType="上海/广州/北京 BGP 智能多线中转群（智能调度本地最优入口）"
+        transitType="深港 / 沪日 / 沪美 IEPL 内网专线通道（绕过公网 GFW 审查）"
+        landingRegions={['中国香港 (HK BGP)', '日本东京 (JP NTT/IIJ)', '新加坡 (SG Singtel)', '美西洛杉矶 (US CMIN2/9929)', '德国法兰克福 (EU BGP)']}
+      />
+    </section>
+
+    <!-- Section 3: Transit vs Direct & Peak Hours -->
+    <section id="transit-vs-direct" class="space-y-4 pt-6 border-t border-slate-200 prose prose-slate max-w-none text-xs sm:text-sm text-slate-700 leading-relaxed">
+      <h2 class="text-2xl font-bold text-slate-900 tracking-tight not-prose">
+        三、公网中转 vs 直连与晚高峰拥塞机理
+      </h2>
+      <p>
+        很多用户不理解：为什么有的便宜机场白天测速能跑满千兆，晚上看 1080P 却卡顿转圈？这源自我国国际互联网出口的 <strong>QoS（服务质量策略）流量调度机制</strong>：
+      </p>
+      <ul>
+        <li><strong>国际出口总带宽是有限的公共资源：</strong> 中国电信 163 骨干网、中国联通 169 骨干网以及中国移动 CMNET，在跨出国境时都必须经过位于北京、上海、广州的国际公网互联出口局。</li>
+        <li><strong>晚高峰公网流量挤塞：</strong> 每天 20:00-23:30 是民用互联网的流量最高峰，海量用户同时向境外服务器发起连接。此时运营商路由器会自动开启丢包策略，优先保证高优先级的政企专线（如金融专用 IPLC），对普通公网直连流量直接执行“随机丢包”（丢包率可高达 25% 以上）。</li>
+        <li><strong>TCP 拥塞控制协议的致命惩罚：</strong> 网络传输基于 TCP 协议。当 TCP 链路检测到 10% 的丢包时，其算法（如 Cubic）会自动将传输拥塞窗口减半，导致你的下载速率发生断崖式暴跌（从 100Mbps 暴跌至不足 5Mbps）。</li>
+      </ul>
+      <p>
+        <strong>破解之道：</strong> 唯有选择 <strong>BGP 国内入口 + 跨境 IEPL 专线</strong> 的机场，由于物理内网不走公网互联出口，因此在晚高峰完全感受不到任何网络波动。
+      </p>
+    </section>
+
+    <!-- Section 4: Global 4 Major Node Regions -->
+    <section id="global-regions" class="space-y-4 pt-6 border-t border-slate-200">
+      <h2 class="text-2xl font-bold text-slate-900 tracking-tight">
+        四、全球四大主流节点地区特性横向评测
+      </h2>
+      <p class="text-xs sm:text-sm text-slate-600 leading-relaxed">
+        一个成熟的节点列表不应盲目追求几十个冷门国家，而应精细化运营以下 4 大核心战略枢纽：
+      </p>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 my-4">
+        <!-- HK -->
+        <div class="p-5 rounded-2xl bg-white border border-slate-200 shadow-xs space-y-2">
+          <div class="flex items-center justify-between">
+            <span class="font-bold text-slate-900 text-base">🇭🇰 中国香港（Hong Kong）</span>
+            <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800">超低延迟：15-30ms</span>
+          </div>
+          <p class="text-xs text-slate-600 leading-relaxed">
+            <strong>核心优势：</strong> 物理距离最近，华南沿海地区直连延迟媲美内网，非常适合日常网页浏览、知乎、GitHub 以及外服手游加速。
+          </p>
+          <div class="text-[11px] text-amber-700 bg-amber-50 p-2 rounded-lg border border-amber-200">
+            ⚠️ <strong>关键禁忌：</strong> 默认<strong>不支持 ChatGPT</strong> 与 TikTok。切勿将香港节点设为 OpenAI 的访问出口！
+          </div>
+        </div>
+
+        <!-- JP -->
+        <div class="p-5 rounded-2xl bg-white border border-slate-200 shadow-xs space-y-2">
+          <div class="flex items-center justify-between">
+            <span class="font-bold text-slate-900 text-base">🇯🇵 日本东京/大阪（Japan）</span>
+            <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-blue-100 text-blue-800">黄金延迟：40-65ms</span>
+          </div>
+          <p class="text-xs text-slate-600 leading-relaxed">
+            <strong>核心优势：</strong> 亚太全能之王。延迟极其舒适，完美支持 ChatGPT、Claude、Google Gemini，同时原生解锁 Netflix 日区、DMM、Pixiv 等本土流媒体与二次元网站。
+          </p>
+          <div class="text-[11px] text-emerald-700 bg-emerald-50 p-2 rounded-lg border border-emerald-200">
+            💡 <strong>使用建议：</strong> 推荐作为日常科学上网的<strong>主选默认常驻节点</strong>。
+          </div>
+        </div>
+
+        <!-- SG -->
+        <div class="p-5 rounded-2xl bg-white border border-slate-200 shadow-xs space-y-2">
+          <div class="flex items-center justify-between">
+            <span class="font-bold text-slate-900 text-base">🇸🇬 新加坡（Singapore）</span>
+            <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-teal-100 text-teal-800">亚太枢纽：60-85ms</span>
+          </div>
+          <p class="text-xs text-slate-600 leading-relaxed">
+            <strong>核心优势：</strong> 东南亚金融与科技枢纽，网络环境开放度极高。完美支持 OpenAI 官方完整套件，中英双语环境友好，对华南及西南地区宽带极其友好。
+          </p>
+          <div class="text-[11px] text-teal-700 bg-teal-50 p-2 rounded-lg border border-teal-200">
+            💡 <strong>使用建议：</strong> 跨境电商东南亚 Shopee/Lazada 运营首选。
+          </div>
+        </div>
+
+        <!-- US -->
+        <div class="p-5 rounded-2xl bg-white border border-slate-200 shadow-xs space-y-2">
+          <div class="flex items-center justify-between">
+            <span class="font-bold text-slate-900 text-base">🇺🇸 美西洛杉矶/硅谷（United States）</span>
+            <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-purple-100 text-purple-800">资源最全：130-170ms</span>
+          </div>
+          <p class="text-xs text-slate-600 leading-relaxed">
+            <strong>核心优势：</strong> 全球互联网中心，拥有最充沛的原生住宅 IP 资源。所有西方科技公司（OpenAI、Anthropic、Apple、Google）的第一白名单地区。
+          </p>
+          <div class="text-[11px] text-purple-700 bg-purple-50 p-2 rounded-lg border border-purple-200">
+            💡 <strong>使用建议：</strong> 虽有 150ms 物理延迟，但在现代 HTTP/3 下看 4K 和日常办公毫无感觉，是<strong>终极容灾兜底节点</strong>。
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 5: Latency, Loss & Multiplier Math -->
+    <section id="latency-factors" class="space-y-4 pt-6 border-t border-slate-200 prose prose-slate max-w-none text-xs sm:text-sm text-slate-700 leading-relaxed">
+      <h2 class="text-2xl font-bold text-slate-900 tracking-tight not-prose">
+        五、光纤物理极限与网络丢包对吞吐的算力影响
+      </h2>
+      <p>
+        光在真空中的传播速度是 30 万公里/秒，但在石英玻璃光纤中的折射率约为 1.47，这意味着<strong>光在光纤中的实际传播速度约为 20 万公里/秒（每 1000 公里耗时 5 毫秒）</strong>。
+      </p>
+      <p>
+        由于网络往返（RTT）需要双向传播，加上路由器逐跳（Hop）交换转发耗时，各地区的理论物理极限延迟如下：
+      </p>
+      <ul>
+        <li><strong>上海到东京：</strong> 直线距离约 1800 公里，海缆物理往返极限约为 28-35ms。</li>
+        <li><strong>深圳到香港：</strong> 距离数十公里，物理专线内网延迟仅需 3-8ms，加上本地接入约 15-25ms。</li>
+        <li><strong>上海到美西（跨太平洋海缆 NCP/TPE）：</strong> 直线跨度超 1 万公里，物理光电往返极限不可能低于 125ms。任何声称美国节点能做到 50ms 的机场均为虚假伪造 Ping 值的欺诈行为！</li>
+      </ul>
+
+      <h3 id="multiplier-math" class="text-lg font-bold text-slate-900 not-prose mt-6">
+        六、线路倍率算法（Multiplier）与科学省流量法则
+      </h3>
+      <p>
+        很多新手用户发现自己购买的 500GB 流量才用了半个月就见底，罪魁祸首往往是<strong>误用了高倍率节点</strong>：
+      </p>
+
+      <div class="not-prose p-4 rounded-xl bg-slate-900 text-white font-mono text-xs my-4 space-y-2">
+        <div class="text-emerald-400 font-bold">实际扣除流量计算公式：</div>
+        <div class="text-sm bg-slate-800 p-2 rounded">
+          实际扣除额 (GB) = 真实产生上下行流量 (GB) × 节点标识倍率
+        </div>
+        <div class="text-slate-400 text-[11px] space-y-1 pt-1">
+          <div>• 示例 1：使用 <code>[0.2x] 香港下载专属</code> 节点下载 50GB 文件 &rarr; 仅扣除 <code>50 × 0.2 = 10 GB</code>（节省 80% 流量！）</div>
+          <div>• 示例 2：使用 <code>[2.0x] 日本原生高防专线</code> 追剧 50GB &rarr; 实际扣除 <code>50 × 2.0 = 100 GB</code>（加速消耗！）</div>
+        </div>
+      </div>
+
+      <p>
+        <strong>使用策略：</strong> 日常刷 YouTube 4K 视频或下载 Steam/BT 大文件，务必切换为 0.1x ~ 0.5x 低倍率节点；处理重要海外账单、AI 生产力或重要会议时，再切换为 1.0x ~ 1.5x 高品质专线。
+      </p>
+    </section>
+
+    <!-- Section 7: 8 Subtopics Navigation Grid -->
+    <section id="network-subtopics" class="space-y-4 pt-6 border-t border-slate-200">
+      <div class="flex items-center justify-between">
+        <h2 class="text-2xl font-bold text-slate-900 tracking-tight">
+          七、线路与节点 8 大二级细分知识中心
+        </h2>
+        <span class="text-xs text-slate-500 font-mono">8 个主题分支深度覆盖</span>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        {topic.subtopics.map((sub) => (
+          <a
+            href={`/network/${sub.slug}/`}
+            class="group block p-4 rounded-xl border border-slate-200 bg-white hover:border-blue-500 hover:shadow-md transition-all space-y-2"
+          >
+            <div class="flex items-center justify-between">
+              <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-blue-50 text-blue-700 font-mono">
+                /{sub.slug}/
+              </span>
+              <span class="text-xs text-slate-400 group-hover:text-blue-600 transition-colors">&rarr;</span>
+            </div>
+            <h3 class="text-xs sm:text-sm font-bold text-slate-900 group-hover:text-blue-600 transition-colors line-clamp-1">
+              {sub.title.split('：')[0]}
+            </h3>
+            <p class="text-xs text-slate-500 line-clamp-2 leading-relaxed">
+              {sub.heroAnswer}
+            </p>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <!-- Commercial CTA: Guangsu Cloud -->
+    <section class="rounded-2xl bg-gradient-to-br from-blue-900 via-indigo-900 to-slate-900 text-white p-6 sm:p-8 shadow-xl space-y-4">
+      <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div class="space-y-1">
+          <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-blue-500/20 text-blue-300 text-xs font-semibold">
+            <span>🚀 专线网络推荐服务商</span>
+          </div>
+          <h3 class="text-xl sm:text-2xl font-bold tracking-tight">
+            全链路 BGP + 纯内网 IEPL 闭环专线：光速云
+          </h3>
+          <p class="text-xs sm:text-sm text-slate-300 max-w-2xl leading-relaxed">
+            告别公网晚高峰严重丢包与敏感期大断连。光速云配备自研高冗余国内中转入口与原生专线落地出口，为 ChatGPT、Claude 交互与 4K 秒开提供坚实基础。
+          </p>
+        </div>
+        <div class="flex-shrink-0 flex flex-col gap-2 w-full sm:w-auto">
+          <a
+            href={`/go/${MAIN_PUSH_BRAND.slug}/`}
+            target="_blank"
+            rel="nofollow sponsored noopener"
+            class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white font-bold text-center text-xs sm:text-sm shadow-md transition-all whitespace-nowrap"
+          >
+            访问光速云官网直连入口 &rarr;
+          </a>
+          <span class="text-[11px] text-slate-400 text-center font-mono">
+            专属特惠折扣码：<span class="text-amber-400 font-bold">{MAIN_PUSH_BRAND.coupon}</span>
+          </span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 8: FAQ Accordion -->
+    <section id="network-faq" class="space-y-4 pt-6 border-t border-slate-200">
+      <div class="space-y-1">
+        <h2 class="text-2xl font-bold text-slate-900 tracking-tight">
+          八、线路与节点常见技术问答（FAQ）
+        </h2>
+        <p class="text-xs sm:text-sm text-slate-500">
+          基于网络工程真实测量与用户常见疑问整理，先给结论，拒绝模棱两可。
+        </p>
+      </div>
+
+      <div class="space-y-3">
+        {faqs.map((f, i) => (
+          <details class="group bg-white border border-slate-200 rounded-xl p-4 transition-all">
+            <summary class="flex items-center justify-between font-bold text-slate-900 cursor-pointer list-none text-xs sm:text-sm">
+              <span class="flex items-center gap-2">
+                <span class="text-blue-600 font-mono">Q{i + 1}.</span>
+                <span>{f.q}</span>
+              </span>
+              <span class="text-slate-400 group-open:rotate-180 transition-transform ml-2">▼</span>
+            </summary>
+            <div class="mt-3 text-xs sm:text-sm text-slate-600 leading-relaxed pl-6 border-l-2 border-blue-500">
+              {f.a}
+            </div>
+          </details>
+        ))}
+      </div>
+    </section>
+
+    <!-- Bottom Disclaimer -->
+    <AffiliateDisclaimer />
+
+  </article>
+
+</BaseLayout>

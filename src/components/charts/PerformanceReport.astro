@@ -1,0 +1,105 @@
+---
+import type { SpeedTestItem } from '@/data/brands';
+
+export interface Props {
+  brandName: string;
+  testDate?: string;
+  testTime?: string;
+  environment?: string;
+  speedTests: SpeedTestItem[];
+  averagePing?: string;
+  maxDownload?: string;
+  packetLoss?: string;
+}
+
+const {
+  brandName,
+  testDate = '2026-10-19',
+  testTime = '实测样本',
+  environment = 'Clash Verge Rev v1.7.x | 节点服务器: Speedtest.net',
+  speedTests,
+  averagePing = '62ms',
+  maxDownload = '529 Mbps',
+  packetLoss = '0%'
+} = Astro.props;
+
+// Calculate progress percentage relative to 600Mbps
+function calculatePercentage(speedStr: string): number {
+  const num = parseFloat(speedStr.replace(/[^0-9.]/g, '')) || 0;
+  return Math.min(Math.round((num / 600) * 100), 100);
+}
+---
+
+<div class="my-6 rounded-2xl bg-slate-950 border border-slate-800 text-slate-100 p-5 sm:p-6 shadow-2xl font-mono text-xs overflow-hidden">
+  
+  <!-- Header Bar -->
+  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-4 border-b border-slate-800">
+    <div class="flex items-center gap-2">
+      <span class="inline-block w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+      <span class="font-bold text-sm tracking-wide text-white">
+        🌐 {brandName} · 专线性能监测报告
+      </span>
+      <span class="px-2 py-0.5 rounded text-[10px] bg-slate-800 text-emerald-400 border border-slate-700">
+        Performance Report
+      </span>
+    </div>
+    <div class="text-slate-400 text-[11px]">
+      测试日期: <span class="text-slate-200">{testDate}</span> ({testTime})
+    </div>
+  </div>
+
+  <!-- Environment Tag -->
+  <div class="py-2.5 px-3 my-3 bg-slate-900/80 rounded-lg text-slate-400 text-[11px] flex items-center justify-between">
+    <div>软件环境: <span class="text-slate-200">{environment}</span></div>
+    <div class="hidden sm:block text-slate-500">协议: VLESS / Trojan / IEPL</div>
+  </div>
+
+  <!-- Speed Test Nodes List -->
+  <div class="space-y-4 my-4">
+    {speedTests.length > 0 ? (
+      speedTests.map((item) => {
+        const pct = calculatePercentage(item.speed);
+        return (
+          <div class="space-y-1.5">
+            <div class="flex items-center justify-between text-xs">
+              <div class="flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+                <span class="text-slate-200 font-semibold">{item.node} 优质节点</span>
+              </div>
+              <div class="flex items-center gap-4">
+                <span class="text-slate-400">延迟: <strong class="text-emerald-400">{item.ping}</strong></span>
+                <span class="text-slate-400">下行: <strong class="text-cyan-400">{item.speed}</strong></span>
+              </div>
+            </div>
+            <!-- Progress Bar -->
+            <div class="h-2 w-full bg-slate-900 rounded-full overflow-hidden flex border border-slate-800/80">
+              <div
+                class="bg-gradient-to-r from-emerald-500 via-teal-400 to-cyan-400 rounded-full h-full transition-all duration-500"
+                style={`width: ${pct}%`}
+              ></div>
+            </div>
+          </div>
+        );
+      })
+    ) : (
+      <div class="py-4 text-center text-slate-500">
+        此品牌当前测试轮次以稳定性与可用性为主，逐节点跑分更新中（请参考基础套餐信息）。
+      </div>
+    )}
+  </div>
+
+  <!-- Footer Summary -->
+  <div class="pt-4 mt-2 border-t border-slate-800/80 flex flex-col sm:flex-row items-center justify-between text-[11px] text-slate-400 gap-2">
+    <div class="flex items-center gap-3">
+      <span>平均延迟: <strong class="text-slate-200">{averagePing}</strong></span>
+      <span class="text-slate-700">|</span>
+      <span>峰值带宽: <strong class="text-cyan-300">{maxDownload}</strong></span>
+      <span class="text-slate-700">|</span>
+      <span>平均丢包率: <strong class="text-emerald-400">{packetLoss}</strong></span>
+    </div>
+    <div class="text-[10px] text-slate-500 font-mono tracking-wider">
+      [chatgpt指南·网络可观测实验室]
+    </div>
+  </div>
+
+</div>

@@ -1,0 +1,371 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { BRANDS, MAIN_PUSH_BRAND } from '@/data/brands';
+import { getTopicBySlug } from '@/data/topics';
+import BrandCard from '@/components/brands/BrandCard.astro';
+import AffiliateDisclaimer from '@/components/brands/AffiliateDisclaimer.astro';
+
+const topic = getTopicBySlug('pricing')!;
+
+// Curated pricing tier brands
+const budgetBrands = BRANDS.filter(b => b.entryPrice.includes('¥5') || b.entryPrice.includes('¥6') || b.entryPrice.includes('¥7') || b.entryPrice.includes('¥8') || b.name === '飞猫云' || b.name === '无忧链接').slice(0, 3);
+const balancedBrands = [MAIN_PUSH_BRAND, ...BRANDS.filter(b => b.name === '暮光加速' || b.name === '微风网络' || b.name === '二猫云').slice(0, 2)];
+
+const breadcrumbs = [
+  { name: '首页', url: '/' },
+  { name: '价格与套餐', url: '/pricing/' }
+];
+
+const faqs = [
+  { q: '年付折算价格和实际月付价格有何本质区别？', a: '这是行业最常见的宣传陷阱。例如“8元/月”往往是年付 99 元除以 12 个月折算得出的理论均价，结算时必须一次性支付 99 元；而“真月付”是指每个月只需实付 15-25 元，次月可随时停止续费。我们在本站所有对比表中均明确区分「实付月费」与「年付折算价」。' },
+  { q: '一元机场为什么常常断网或失联？', a: '一元机场大多采用极为廉价的公网直连服务器，没有采购昂贵的跨境物理专线。因为售价过低，商家必须依靠海量超卖来维持服务器成本，稍遇晚高峰流量激增或网络阻断就会全线崩溃，只适合当备用玩具，绝不能用作严肃办公。' },
+  { q: '按量付费（不限时流量包）和按月重置流量哪个划算？', a: '取决于使用频次。如果你每天看 4K 视频或重度查资料，每月消耗超 100GB，按月重置的月付/年付套餐单价更便宜；如果你平时很少用，仅仅用来偶尔和 ChatGPT 对话、收发 Gmail 邮件或充当备胎，一次性付费永不过期的不限时流量包（如光速云 147 永久套餐）综合成本最低。' },
+  { q: '如何计算每 GB 流量的真实成本？', a: '真实单价 = 实付总价 ÷ (套餐标称流量 ÷ 节点平均倍率)。如果使用了 2.0x 倍率的高清专线节点，实际可用流量就会减半，相当于单位流量成本翻倍。选购时务必结合自身常驻节点的倍率计算。' },
+  { q: '机场支持哪些支付方式？支持退款吗？', a: '主流品牌通常支持支付宝、微信支付与 USDT 加密货币。由于代理属于数字虚拟商品，绝大多数商家在流量已被消耗或激活后不支持无理由退款；因此新用户第一单强烈建议先选小额月付试水。' },
+  { q: '优惠券代码在哪里获取？如何使用？', a: '我们为全站 31 家品牌汇总了官方生效中的立减优惠码（如光速云优惠码 AMM、暮光加速优惠码 muguang5555）。在官网选好套餐点击“结账”时，将代码复制填入“Coupon / 优惠券”框中点击应用即可立减。' },
+  { q: '买大流量套餐会被运营商限制宽带吗？', a: '正常通过加密专线传输不会受到国内宽带运营商针对具体内容的限制，但请注意大部分正规机场在服务条款（TOS）中明确禁止在代理节点上进行迅雷、BT/PT 种子下载等版权滥用行为。' },
+  { q: '学生党或低预算用户如何选到不踩坑的平价梯子？', a: '预算在 10 元/月以内的用户，推荐优先选择老牌商家的年付促销款（如飞猫云学生版年付 84 元折合 7元/月，或光速云轻量版年付 99 元折合 8元/月），既能保证正规专线线路，又能享受实惠均价。' }
+];
+
+const schema = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'CollectionPage',
+    'name': '2026 机场价格与套餐对比指南',
+    'description': topic.description,
+    'url': 'https://chatgptzhinan.homes/pricing/'
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    'mainEntity': faqs.map(f => ({
+      '@type': 'Question',
+      'name': f.q,
+      'acceptedAnswer': {
+        '@type': 'Answer',
+        'text': f.a
+      }
+    }))
+  }
+];
+---
+
+<BaseLayout
+  title="机场价格与套餐横评｜便宜机场、月付/年付方案与高性价比选购指南"
+  description="全景拆解 31 家机场价格模型：从几元入门轻量包、按月付费、永久不限时套餐到大流量旗舰，帮你算清每GB真实成本，杜绝年付折算套路。"
+  canonical="https://chatgptzhinan.homes/pricing/"
+  breadcrumbs={breadcrumbs}
+  schema={schema}
+>
+
+  <article class="max-w-4xl mx-auto py-6 space-y-10">
+    
+    <!-- Hero Header -->
+    <header class="space-y-4">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-50 text-cyan-700 border border-cyan-200 text-xs font-semibold">
+        <span>💰 价格与计费透明化专题</span>
+        <span>·</span>
+        <span>Pillar Page 价格决策指南</span>
+      </div>
+
+      <h1 class="text-3xl sm:text-5xl font-extrabold text-slate-900 tracking-tight leading-tight">
+        机场价格与套餐全景对比：<br class="hidden sm:inline" />
+        <span class="bg-gradient-to-r from-cyan-600 to-emerald-600 bg-clip-text text-transparent">算清每 GB 成本，杜绝虚标套路</span>
+      </h1>
+
+      <!-- Answer-First Box -->
+      <div class="rounded-2xl bg-gradient-to-r from-cyan-50 via-teal-50 to-emerald-50 border border-cyan-200 p-6 shadow-sm my-6 space-y-3">
+        <div class="flex items-center gap-2 text-cyan-900 font-bold text-sm">
+          <span>⚡ 套餐选购简明结论（Pricing Takeaway）</span>
+        </div>
+        <p class="text-sm sm:text-base text-slate-800 leading-relaxed font-medium">
+          评估机场性价比不能只看单月数字，必须区分「真月付」与「年付折算均价」。<strong>黄金性价比区间为每月 15–25 元</strong>（可获得稳定的 IEPL 专线、晚高峰不卡顿及 ChatGPT 原生解锁）；低预算用户建议首选<strong>老牌年付轻量款</strong>（如光速云轻量版 99元/年，折合 8.25元/月；飞猫云学生版 84元/年，折合 7元/月）；低频用户首推<strong>一次性付费永久不过期流量包</strong>（如光速云 147 永久套餐，247GB 永久有效）。
+        </p>
+        <div class="pt-3 border-t border-cyan-200/60 flex flex-wrap items-center justify-between gap-2 text-xs text-cyan-800">
+          <span>横评样本：31 家主流品牌正规套餐表</span>
+          <span>最新审计：2026 年 11 月 21 日</span>
+        </div>
+      </div>
+
+      <!-- Jump Nav -->
+      <nav class="bg-white border border-slate-200 rounded-2xl p-4 sm:p-5 shadow-xs">
+        <div class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">章节导航 · 快速定位价格模块</div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 text-xs">
+          <a href="#pricing-tiers" class="text-slate-700 hover:text-emerald-600 py-1">一、三大主流价格梯度划分 &rarr;</a>
+          <a href="#cheap-truth" class="text-slate-700 hover:text-emerald-600 py-1">二、一元/一分机场真相与局限 &rarr;</a>
+          <a href="#monthly-vs-annual" class="text-slate-700 hover:text-emerald-600 py-1">三、真月付 vs 年付折算避坑 &rarr;</a>
+          <a href="#unlimited-time" class="text-slate-700 hover:text-emerald-600 py-1">四、不限时永久包与按月重置 &rarr;</a>
+          <a href="#cost-per-gb" class="text-slate-700 hover:text-emerald-600 py-1">五、单位 GB 成本与倍率计算模型 &rarr;</a>
+          <a href="#pricing-subtopics" class="text-slate-700 hover:text-emerald-600 py-1">六、价格专题 8 大细分中心 &rarr;</a>
+          <a href="#pricing-faq" class="text-slate-700 hover:text-emerald-600 py-1">七、套餐选购高频常见问答 &rarr;</a>
+        </div>
+      </nav>
+    </header>
+
+    <!-- Section 1: Pricing Tiers -->
+    <section id="pricing-tiers" class="space-y-4 pt-4">
+      <h2 class="text-2xl font-bold text-slate-900 tracking-tight">
+        一、主流机场三大价格区间定位与推荐
+      </h2>
+      <p class="text-xs sm:text-sm text-slate-600 leading-relaxed">
+        根据每月预算与用量需求，合理匹配服务层级，避免花冤枉钱：
+      </p>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-5 my-4">
+        
+        <!-- Tier 1 -->
+        <div class="bg-white border border-slate-200 rounded-2xl p-5 flex flex-col justify-between shadow-xs">
+          <div>
+            <div class="text-xs font-mono font-bold text-slate-400 uppercase">TIER 01 · 轻量入门</div>
+            <div class="text-xl font-black text-slate-900 mt-1">¥5.6 ~ ¥10 <span class="text-xs font-normal text-slate-500">/月</span></div>
+            <div class="text-xs text-emerald-600 font-semibold mt-0.5">适合日常查资料 / 学生党</div>
+            <ul class="my-4 space-y-2 text-xs text-slate-600">
+              <li>• 流量：50GB ~ 70GB /月</li>
+              <li>• 线路：多线中转或年付轻量专线</li>
+              <li>• 代表品牌：飞猫云学生版、光速云轻量版</li>
+              <li>• 缺点：晚高峰极限带宽受限</li>
+            </ul>
+          </div>
+          <div class="pt-3 border-t border-slate-100 text-xs">
+            <a href="/pricing/cheap/" class="text-emerald-600 font-bold hover:underline">查看平价机场专题 &rarr;</a>
+          </div>
+        </div>
+
+        <!-- Tier 2 -->
+        <div class="bg-white border-2 border-emerald-500 rounded-2xl p-5 flex flex-col justify-between shadow-md relative">
+          <div class="absolute -top-3 right-4 bg-emerald-600 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
+            主流黄金区间
+          </div>
+          <div>
+            <div class="text-xs font-mono font-bold text-emerald-600 uppercase">TIER 02 · 黄金平衡</div>
+            <div class="text-xl font-black text-slate-900 mt-1">¥15 ~ ¥35 <span class="text-xs font-normal text-slate-500">/月</span></div>
+            <div class="text-xs text-emerald-700 font-semibold mt-0.5">兼顾晚高峰专线与 AI 解锁</div>
+            <ul class="my-4 space-y-2 text-xs text-slate-600">
+              <li>• 流量：120GB ~ 268GB /月</li>
+              <li>• 线路：全内网 IEPL / IPLC 物理专线</li>
+              <li>• 代表品牌：光速云极速版、暮光基础版、微风网络</li>
+              <li>• 优势：0% 丢包、ChatGPT 原生解锁</li>
+            </ul>
+          </div>
+          <div class="pt-3 border-t border-slate-100 text-xs">
+            <a href="/pricing/cost-effective/" class="text-emerald-600 font-bold hover:underline">查看高性价比专题 &rarr;</a>
+          </div>
+        </div>
+
+        <!-- Tier 3 -->
+        <div class="bg-white border border-slate-200 rounded-2xl p-5 flex flex-col justify-between shadow-xs">
+          <div>
+            <div class="text-xs font-mono font-bold text-purple-600 uppercase">TIER 03 · 商业旗舰</div>
+            <div class="text-xl font-black text-slate-900 mt-1">¥68 ~ ¥680 <span class="text-xs font-normal text-slate-500">/月</span></div>
+            <div class="text-xs text-purple-700 font-semibold mt-0.5">大团队 / 跨境电商 / 私人定制</div>
+            <ul class="my-4 space-y-2 text-xs text-slate-600">
+              <li>• 流量：500GB ~ 1TB+ /月</li>
+              <li>• 线路：独享专属原生 IP、千兆冗余</li>
+              <li>• 代表品牌：光速云定制版、暮光定制节点</li>
+              <li>• 优势：最高级别 SLA，独立带宽隔离</li>
+            </ul>
+          </div>
+          <div class="pt-3 border-t border-slate-100 text-xs">
+            <a href="/pricing/large-bandwidth/" class="text-purple-600 font-bold hover:underline">查看大流量专题 &rarr;</a>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Section 2: Cheap Airport Truth -->
+    <section id="cheap-truth" class="space-y-4 pt-6 border-t border-slate-200 prose prose-slate max-w-none text-xs sm:text-sm text-slate-700 leading-relaxed">
+      <h2 class="text-2xl font-bold text-slate-900 tracking-tight not-prose">
+        二、一元机场与一分机场的商业本质与风险揭示
+      </h2>
+      <p>
+        在搜索引擎与各类论坛中，“一元机场”、“一分机场”常年具有极高搜索热度。理解这类产品背后的商业逻辑，是避免频繁踩坑的关键：
+      </p>
+      <ul>
+        <li><strong>一元机场（1元/月）：</strong> 绝大多数并非采用真实的跨境专用线路，而是由个人站长租用几台廉价公网 VPS 搭建的直连节点。由于单价极低，站长必须在一个节点上塞入数千名用户来收回成本。一旦到了晚高峰，公网出口瞬间拥堵，丢包率往往超过 40%，且由于缺乏维护预算，极易突然关站跑路。</li>
+        <li><strong>一分机场（0.01元/免费）：</strong> 此类通常是黑灰产引流工具。用户为了白嫖节点，需要注册账号甚至下载专用的未知客户端，极易导致个人密码、邮箱信息泄露，甚至沦为黑客发起 DDoS 攻击的僵尸网络节点。</li>
+      </ul>
+      <p>
+        <strong>结论：</strong> 严禁将一元/免费节点用于任何包含敏感数据、商业资金账户、或 ChatGPT 长期账号的场景；仅可作为完全无关紧要的轻度浏览应急测试。
+      </p>
+    </section>
+
+    <!-- Section 3: Monthly vs Annual -->
+    <section id="monthly-vs-annual" class="space-y-4 pt-6 border-t border-slate-200">
+      <h2 class="text-2xl font-bold text-slate-900 tracking-tight">
+        三、真月付 vs 年付折算均价：认清账单套路
+      </h2>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        
+        <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-xs space-y-2">
+          <div class="font-bold text-slate-900 text-sm flex items-center gap-1.5">
+            <span>📅</span>
+            <span>真·月付套餐（按月实付）</span>
+          </div>
+          <p class="text-xs text-slate-600 leading-relaxed">
+            <strong>特点：</strong> 每次只需支付 15-25 元即可享受 30 天完整服务，到期不自动扣费。
+          </p>
+          <div class="text-xs bg-emerald-50 text-emerald-800 p-3 rounded-xl border border-emerald-100">
+            <strong>核心价值：</strong> 试错成本极低。即使本地运营商与该机场线路不合，损失也仅限于十几元，完全杜绝沉没成本。
+          </div>
+        </div>
+
+        <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-xs space-y-2">
+          <div class="font-bold text-slate-900 text-sm flex items-center gap-1.5">
+            <span>⏳</span>
+            <span>年付折算月价（一次性付费）</span>
+          </div>
+          <p class="text-xs text-slate-600 leading-relaxed">
+            <strong>特点：</strong> 商家宣传“折合8元/月”，结账时实际需一次性刷卡支付 99 元年费。
+          </p>
+          <div class="text-xs bg-amber-50 text-amber-800 p-3 rounded-xl border border-amber-100">
+            <strong>适用条件：</strong> 仅推荐给已经使用过该品牌月付套餐、确认本地晚高峰体验满意且商家具有 2 年以上信誉的老用户。
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Section 4: Unlimited Time Packages -->
+    <section id="unlimited-time" class="space-y-4 pt-6 border-t border-slate-200">
+      <h2 class="text-2xl font-bold text-slate-900 tracking-tight">
+        四、不限时永久流量包：低频与备用用户的性价比之王
+      </h2>
+      <p class="text-xs sm:text-sm text-slate-600 leading-relaxed">
+        传统套餐每月月底无论用没用完都会强制将剩余流量清零；而不限时流量包采用“一次性付费、流量用完即止”的计费逻辑：
+      </p>
+
+      <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-xs space-y-3">
+        <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+          <div>
+            <div class="font-bold text-slate-900 text-sm">典型代表：光速云·致敬斯诺克 147 永久套餐</div>
+            <div class="text-xs text-slate-500 mt-0.5">一次性实付 ¥147 · 包含 247GB 永久物理专线流量</div>
+          </div>
+          <a
+            href={`/go/${MAIN_PUSH_BRAND.slug}/`}
+            target="_blank"
+            rel="nofollow sponsored noopener"
+            class="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold"
+          >
+            官网了解详情 &rarr;
+          </a>
+        </div>
+        <p class="text-xs text-slate-600 leading-relaxed">
+          <strong>经济账测算：</strong> 如果你每个月仅用于 ChatGPT 查询与收发邮件，月消耗流量仅 5GB。普通按月付费 20元/月 一年需支出 240 元；而购买 147 元的不限时包，足够使用近 4 年，平均月成本仅 3 元！
+        </p>
+      </div>
+    </section>
+
+    <!-- Section 5: Cost per GB & Multiplier -->
+    <section id="cost-per-gb" class="space-y-4 pt-6 border-t border-slate-200">
+      <h2 class="text-2xl font-bold text-slate-900 tracking-tight">
+        五、单位 GB 成本与节点倍率计算模型
+      </h2>
+      <div class="bg-slate-950 text-slate-100 rounded-2xl p-5 sm:p-6 font-mono text-xs shadow-lg space-y-3">
+        <div class="text-emerald-400 font-bold text-sm">// 真实单位流量成本计算模型</div>
+        <div class="bg-slate-900 p-3 rounded-xl border border-slate-800 text-slate-300 leading-relaxed">
+          真实单价 (元/GB) = 实付套餐金额 ÷ [ 套餐标称流量 (GB) ÷ 常用节点倍率 (Multiplier) ]
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2 text-[11px]">
+          <div class="bg-slate-900/60 p-2.5 rounded-lg border border-slate-800">
+            <span class="text-slate-400">0.5x 低倍率节点：</span><br />
+            实际可用流量翻倍，追剧首选。
+          </div>
+          <div class="bg-slate-900/60 p-2.5 rounded-lg border border-slate-800">
+            <span class="text-slate-400">1.0x 标准倍率：</span><br />
+            消耗 1GB 扣 1GB，基准性价比。
+          </div>
+          <div class="bg-slate-900/60 p-2.5 rounded-lg border border-slate-800">
+            <span class="text-slate-400">2.0x+ 专线/定制：</span><br />
+            高昂内网物理成本，适合核心办公。
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 6: 8 Subtopics of Pricing -->
+    <section id="pricing-subtopics" class="space-y-4 pt-6 border-t border-slate-200">
+      <div class="flex items-center justify-between">
+        <h2 class="text-2xl font-bold text-slate-900 tracking-tight">
+          六、价格与套餐专题下属 8 大细分中心
+        </h2>
+        <span class="text-xs text-slate-400">精准匹配不同预算意图</span>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        {topic.subtopics.map((sub, sIdx) => (
+          <div class="bg-white border border-slate-200 rounded-2xl p-5 flex flex-col justify-between hover:border-cyan-500 hover:shadow-md transition-all">
+            <div>
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-xs font-mono font-bold text-cyan-600">PRICING #{sIdx + 1}</span>
+                <span class="text-[10px] px-2 py-0.5 rounded bg-slate-100 text-slate-600 uppercase font-medium">
+                  {sub.searchIntent}
+                </span>
+              </div>
+              <h3 class="font-bold text-base text-slate-900 mb-1.5">
+                <a href={`/pricing/${sub.slug}/`} class="hover:text-cyan-600 transition-colors">
+                  {sub.title}
+                </a>
+              </h3>
+              <p class="text-xs text-slate-600 leading-relaxed mb-3 line-clamp-2">
+                {sub.heroAnswer}
+              </p>
+            </div>
+            <div class="pt-3 border-t border-slate-100 flex items-center justify-between text-xs">
+              <span class="text-slate-400">含价格表与FAQ</span>
+              <a href={`/pricing/${sub.slug}/`} class="text-cyan-600 font-semibold hover:underline">
+                深入选购 &rarr;
+              </a>
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <!-- Section 7: FAQ -->
+    <section id="pricing-faq" class="space-y-4 pt-6 border-t border-slate-200">
+      <h2 class="text-2xl font-bold text-slate-900 tracking-tight flex items-center gap-2">
+        <span>❓</span>
+        <span>套餐价格常见疑问答疑（FAQ）</span>
+      </h2>
+
+      <div class="space-y-3">
+        {faqs.map((faq) => (
+          <div class="bg-white border border-slate-200 rounded-2xl p-4 sm:p-5 shadow-2xs">
+            <h3 class="font-bold text-slate-900 text-sm mb-2 flex items-start gap-2">
+              <span class="text-cyan-600 font-bold">问：</span>
+              <span>{faq.q}</span>
+            </h3>
+            <p class="text-xs sm:text-sm text-slate-600 leading-relaxed pl-6">
+              <strong class="text-cyan-700">答：</strong>{faq.a}
+            </p>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <!-- Cross Interlinks -->
+    <section class="pt-6 border-t border-slate-200 space-y-3">
+      <h3 class="font-bold text-slate-900 text-sm">
+        🔗 相关一级专题推荐导航：
+      </h3>
+      <div class="flex flex-wrap gap-2 text-xs">
+        <a href="/airport/" class="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-emerald-50 hover:text-emerald-700 text-slate-700 transition-colors">
+          机场推荐综合指南（专线与晚高峰横评） &rarr;
+        </a>
+        <a href="/brands/" class="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-emerald-50 hover:text-emerald-700 text-slate-700 transition-colors">
+          31家机场品牌数据库及优惠码 &rarr;
+        </a>
+        <a href="/safety/" class="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-emerald-50 hover:text-emerald-700 text-slate-700 transition-colors">
+          风险预警与退款政策指南 &rarr;
+        </a>
+      </div>
+    </section>
+
+    <div class="pt-4">
+      <AffiliateDisclaimer />
+    </div>
+
+  </article>
+
+</BaseLayout>

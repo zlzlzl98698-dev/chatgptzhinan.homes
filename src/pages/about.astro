@@ -1,0 +1,162 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import AffiliateDisclaimer from '@/components/brands/AffiliateDisclaimer.astro';
+
+const breadcrumbs = [
+  { name: '首页', url: '/' },
+  { name: '关于我们与评测准则', url: '/about/' }
+];
+
+const orgSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'AboutPage',
+  'name': '关于 chatgpt指南 独立评测实验室',
+  'description': '了解 chatgpt指南 的评测方法论、网络测试硬件环境、E-E-A-T 质量准则与商业合作透明度规范。',
+  'url': 'https://chatgptzhinan.homes/about/',
+  'mainEntity': {
+    '@type': 'Organization',
+    'name': 'chatgpt指南独立实验室',
+    'url': 'https://chatgptzhinan.homes',
+    'logo': 'https://chatgptzhinan.homes/images/avatar.webp',
+    'foundingDate': '2024',
+    'knowsAbout': [
+      'ChatGPT 访问与网络配置',
+      'Claude 原生解锁与防封号',
+      'IEPL/IPLC 跨境物理专线架构',
+      'Clash Verge Rev 与 Mihomo 内核分流',
+      '家庭透明代理与网络故障自愈'
+    ],
+    'publishingPrinciples': 'https://chatgptzhinan.homes/about/#editorial-standards'
+  }
+};
+---
+
+<BaseLayout
+  title="关于我们与评测准则：方法论、硬件环境与 E-E-A-T 质量承诺 | chatgpt指南"
+  description="了解 chatgpt指南 独立实验室的测试硬件基准、晚高峰测速方法、AI 原生 IP 纯净度核验流程与商业合作透明度原则。"
+  breadcrumbs={breadcrumbs}
+  schema={orgSchema}
+>
+  <div class="space-y-10 max-w-4xl mx-auto py-4">
+    <!-- Header Banner -->
+    <header class="bg-gradient-to-br from-slate-900 to-slate-800 text-white rounded-3xl p-6 sm:p-10 shadow-xl border border-slate-700/80 space-y-4">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300 text-xs font-semibold border border-emerald-500/30">
+        <span>🛡️ 独立客观 · 真实测速 · 数据溯源</span>
+      </div>
+      <h1 class="text-2xl sm:text-4xl font-extrabold tracking-tight leading-tight">
+        chatgpt指南 独立评测实验室
+      </h1>
+      <p class="text-sm sm:text-base text-slate-300 leading-relaxed max-w-2xl">
+        我们专注于为全球中文用户提供科学上网、跨境专线、AI 生产力工具（ChatGPT, Claude, Gemini）以及客户端软件的全景技术评测与深度排障手册。坚持以真实实测数据为依据，拒绝虚假营销与无脑吹捧。
+      </p>
+    </header>
+
+    <!-- Section 1: Testing Infrastructure -->
+    <section class="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 shadow-xs space-y-6">
+      <div class="border-b border-slate-100 pb-4">
+        <h2 class="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">
+          一、标准化硬件与测试网络环境
+        </h2>
+        <p class="text-xs sm:text-sm text-slate-500 mt-1">
+          为确保评测结论具备可复现性与横向可比性，所有网络测速与抗拥堵实验均在严格受控的物理环境中执行：
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-2">
+          <div class="font-bold text-sm text-slate-900 flex items-center gap-2">
+            <span>🌐 宽带接入基准</span>
+          </div>
+          <ul class="text-xs text-slate-600 space-y-1">
+            <li>• 中国电信 1000M FTTH (骨干网 AS4134 / AS4809)</li>
+            <li>• 中国联通 500M FTTH (骨干网 AS4837 / AS9929)</li>
+            <li>• 中国移动 500M 蜂窝双栈网络 (AS9808)</li>
+            <li>• 覆盖南方电信与北方联通主要跨境出口路由</li>
+          </ul>
+        </div>
+
+        <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-2">
+          <div class="font-bold text-sm text-slate-900 flex items-center gap-2">
+            <span>💻 终端与网关硬件</span>
+          </div>
+          <ul class="text-xs text-slate-600 space-y-1">
+            <li>• MikroTik RB5009 软路由网关 (千兆线速转发)</li>
+            <li>• Apple MacBook Pro M3 Max (macOS 15 Sequoia)</li>
+            <li>• 性能测试工作站 (Windows 11 Pro 64位, 2.5G 网卡)</li>
+            <li>• iPhone 16 Pro (iOS 18 + Shadowrocket / Loon)</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="bg-emerald-50/70 border border-emerald-200 rounded-2xl p-4 text-xs text-emerald-900 space-y-1">
+        <strong>测试时段基准：</strong> 我们将每日 20:30 - 23:00（全网跨境出口最拥堵的晚高峰黄金时段）作为核心考核窗口。凡是晚高峰丢包率超过 5% 的服务，绝不给予“主力专线”评级。
+      </div>
+    </section>
+
+    <!-- Section 2: Four-Dimension Rating Framework -->
+    <section class="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 shadow-xs space-y-6">
+      <div class="border-b border-slate-100 pb-4">
+        <h2 class="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">
+          二、客观量化评分模型 (4-Dimension Framework)
+        </h2>
+        <p class="text-xs sm:text-sm text-slate-500 mt-1">
+          全站 31 家品牌评测均采用加权量化评分，拒绝主观臆断：
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-4 gap-3">
+        <div class="p-4 rounded-xl bg-slate-50 border border-slate-200 text-center space-y-1">
+          <div class="text-2xl font-black text-emerald-600">35%</div>
+          <div class="font-bold text-xs text-slate-800">晚高峰线路稳定性</div>
+          <div class="text-[11px] text-slate-500">IEPL物理内网、晚高峰丢包与抖动</div>
+        </div>
+        <div class="p-4 rounded-xl bg-slate-50 border border-slate-200 text-center space-y-1">
+          <div class="text-2xl font-black text-blue-600">25%</div>
+          <div class="font-bold text-xs text-slate-800">AI 原生解锁能力</div>
+          <div class="text-[11px] text-slate-500">ChatGPT 403风控绕过、Claude住宅IP纯净度</div>
+        </div>
+        <div class="p-4 rounded-xl bg-slate-50 border border-slate-200 text-center space-y-1">
+          <div class="text-2xl font-black text-amber-600">20%</div>
+          <div class="font-bold text-xs text-slate-800">单位 GB 综合性价比</div>
+          <div class="text-[11px] text-slate-500">套餐起步门槛、不限时有效期、倍率透明度</div>
+        </div>
+        <div class="p-4 rounded-xl bg-slate-50 border border-slate-200 text-center space-y-1">
+          <div class="text-2xl font-black text-purple-600">20%</div>
+          <div class="font-bold text-xs text-slate-800">运营年限与抗风险资质</div>
+          <div class="text-[11px] text-slate-500">在网年限、工单客服响应、跑路避坑记录</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 3: Editorial Standards & Transparency -->
+    <section id="editorial-standards" class="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 shadow-xs space-y-6">
+      <div class="border-b border-slate-100 pb-4">
+        <h2 class="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">
+          三、内容创作与商业合作透明度准则
+        </h2>
+        <p class="text-xs sm:text-sm text-slate-500 mt-1">
+          我们严格遵循 Google E-E-A-T（经验、专业、权威、信任）与技术传播伦理：
+        </p>
+      </div>
+
+      <div class="space-y-4 text-xs sm:text-sm text-slate-700 leading-relaxed">
+        <p>
+          <strong>1. 独立评测与自主购买：</strong>
+          我们不接受任何服务商以付费形式“买断”评级或要求删除真实负面测试结论。如果某品牌在实测中出现大规模节点宕机或跑路征兆，我们将第一时间在 <a href="/safety/" class="text-emerald-700 underline font-semibold">/safety/ 风险专题</a> 中如实发布预警。
+        </p>
+        <p>
+          <strong>2. 推广佣金披露 (Affiliate Disclosure)：</strong>
+          为了维持服务器机房、测试带宽与自动化监控集群的日常高昂开销，本站部分品牌链接可能包含经过合规处理的推荐代码。当您通过本站认证入口注册并购买服务时，服务商可能会向本站支付少量推荐佣金，这<strong>不会增加您的任何购买成本</strong>，甚至由于本站专属优惠码（如 <code>AMM</code>）的存在，您可以享受更低的折上折特惠。
+        </p>
+        <p>
+          <strong>3. 零 Cookie 隐私承诺：</strong>
+          本站严格遵守个人隐私保护准则，不使用侵入式的跨站追踪 Cookie，所有统计数据均存储于用户本地浏览器（localStorage），绝不上报或出售任何用户网络身份。
+        </p>
+      </div>
+
+      <div class="pt-4 border-t border-slate-100">
+        <AffiliateDisclaimer />
+      </div>
+    </section>
+  </div>
+</BaseLayout>

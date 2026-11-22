@@ -1,0 +1,330 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { BRANDS } from '@/data/brands';
+import { getTopicBySlug } from '@/data/topics';
+import BrandCard from '@/components/brands/BrandCard.astro';
+import AffiliateDisclaimer from '@/components/brands/AffiliateDisclaimer.astro';
+
+const topic = getTopicBySlug('brands')!;
+
+const breadcrumbs = [
+  { name: '首页', url: '/' },
+  { name: '机场品牌库', url: '/brands/' }
+];
+
+const faqs = [
+  { q: '品牌库收录的 31 家机场是如何筛选出来的？', a: '所有收录品牌均基于公开运营资料、站长实测记录与真实用户反馈，覆盖从老牌稳定旗舰（如 2020 年运营的光速云、星岛梦）到新秀高速专线。我们对每个品牌的开业时间、节点专线类型、主要协议、套餐价格与优惠码进行了严格的数据规范化与审计。' },
+  { q: '为什么第一主推品牌是光速云？', a: '在 31 家品牌中，光速云兼具 2020 年至今的长周期稳健运营信誉、IEPL 与企业级内网双专线架构、自研全平台客户端与通用订阅双支持、以及完备的 7 档套餐体系（从 99元/年轻量版到按需独立定制）。在晚高峰丢包与 ChatGPT 解锁实测中表现出众。' },
+  { q: '自研客户端品牌和通用订阅品牌有什么区别？', a: '自研客户端品牌（如梯子云、光速云自研端）小白门槛最低，下载软件输入账号密码即可一键连接；通用订阅品牌提供标准 Clash/Shadowrocket/v2rayN 订阅链接，分流规则更灵活。两者各有所长，光速云等品牌同时支持这两种方式。' },
+  { q: '如何防范误入假冒钓鱼机场网站？', a: '由于国内审查与域名封锁，部分不法分子会制作高仿的“镜像钓鱼站”窃取用户账号密码与资金。本站品牌库所有注册链接均与官方验证入口绑定，并附带安全协议与安全属性跳转，建议通过本站导航进入。' },
+  { q: '部分品牌标注「待核实」是什么意思？', a: '我们坚持实事求是原则。对于官方仅披露了起步资费但暂未提供逐节点跑分、或部分历史归档资料（如灵动云、浪网），我们如实标注为「待核实」或「厂商档案」，绝不伪造虚假测速跑分欺骗读者。' },
+  { q: '如果主用品牌遇到突发机房维护，如何寻找替代？', a: '在品牌库中可以按“IEPL专线”快速筛选架构对等的备用服务商。重度办公用户建议在主力品牌之外，常备一个不限时不过期的按量付费小包（如光速云 147 永久套餐），遇到骨干网波动时秒级平替。' }
+];
+
+const brandListSchema = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'ItemList',
+    'name': '31家机场品牌数据库与评测名录',
+    'description': '收录 31 家真实运营机场品牌档案，包含注册链接、优惠码、套餐实标价格与节点测速。',
+    'numberOfItems': BRANDS.length,
+    'itemListElement': BRANDS.map((b, idx) => ({
+      '@type': 'ListItem',
+      'position': idx + 1,
+      'name': b.name,
+      'url': `https://chatgptzhinan.homes/brands/${b.slug}/`
+    }))
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    'mainEntity': faqs.map(f => ({
+      '@type': 'Question',
+      'name': f.q,
+      'acceptedAnswer': {
+        '@type': 'Answer',
+        'text': f.a
+      }
+    }))
+  }
+];
+---
+
+<BaseLayout
+  title="31家机场品牌数据库｜主流机场推荐、套餐价格与优惠码核验大全"
+  description="收录 31 家主流机场服务商真实档案：光速云、暮光加速、飞猫云、微风网络等，提供官网正品入口、优惠码立减、套餐价格横评与晚高峰测速。"
+  canonical="https://chatgptzhinan.homes/brands/"
+  breadcrumbs={breadcrumbs}
+  schema={brandListSchema}
+>
+
+  <!-- Page Header -->
+  <div class="py-8 max-w-4xl mx-auto text-center space-y-4">
+    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs font-semibold">
+      <span>📊 全网独立评测数据库</span>
+      <span>·</span>
+      <span>Pillar Page 品牌中枢中心</span>
+    </div>
+
+    <h1 class="text-3xl sm:text-5xl font-extrabold text-slate-900 tracking-tight leading-tight">
+      31 家机场品牌全景数据库与客观档案
+    </h1>
+
+    <p class="text-sm sm:text-base text-slate-600 leading-relaxed max-w-2xl mx-auto">
+      拒绝虚假测速与商业绑架。基于真实测试环境、官方定价表与实际解锁能力，为你提供客观透明的品牌档案与精准选购依据。
+    </p>
+
+    <!-- Stats Bar -->
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 max-w-2xl mx-auto pt-4 text-left">
+      <div class="bg-white p-3.5 rounded-2xl border border-slate-200 shadow-xs">
+        <div class="text-[10px] text-slate-400 uppercase font-semibold">收录品牌总数</div>
+        <div class="text-2xl font-black text-slate-900 mt-0.5">{BRANDS.length} 家</div>
+      </div>
+      <div class="bg-white p-3.5 rounded-2xl border border-slate-200 shadow-xs">
+        <div class="text-[10px] text-slate-400 uppercase font-semibold">第一主推旗舰</div>
+        <div class="text-2xl font-black text-emerald-600 mt-0.5">光速云</div>
+      </div>
+      <div class="bg-white p-3.5 rounded-2xl border border-slate-200 shadow-xs">
+        <div class="text-[10px] text-slate-400 uppercase font-semibold">最低起步门槛</div>
+        <div class="text-2xl font-black text-cyan-600 mt-0.5">¥5.6 /月</div>
+      </div>
+      <div class="bg-white p-3.5 rounded-2xl border border-slate-200 shadow-xs">
+        <div class="text-[10px] text-slate-400 uppercase font-semibold">最新审计时间</div>
+        <div class="text-2xl font-black text-purple-600 mt-0.5">2026.11</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Interactive Search & Filter Controls -->
+  <div class="my-8 bg-white border border-slate-200 rounded-2xl p-5 shadow-sm space-y-4">
+    
+    <!-- Keyword Search -->
+    <div class="flex flex-col sm:flex-row items-center gap-3">
+      <div class="relative flex-1 w-full">
+        <input
+          type="text"
+          id="brand-search-input"
+          placeholder="快速搜索品牌名称或别名（如：光速云、暮光、飞猫、weitu...）"
+          class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:border-emerald-500 text-xs sm:text-sm"
+        />
+        <svg class="w-4 h-4 text-slate-400 absolute left-3.5 top-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+        </svg>
+      </div>
+
+      <!-- Quick Filter Pills -->
+      <div class="flex flex-wrap items-center gap-2 w-full sm:w-auto text-xs" id="filter-pills">
+        <button data-filter="all" class="filter-btn active px-3 py-2 rounded-xl bg-slate-900 text-white font-semibold">
+          全部 ({BRANDS.length})
+        </button>
+        <button data-filter="iepl" class="filter-btn px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium">
+          IEPL专线
+        </button>
+        <button data-filter="chatgpt" class="filter-btn px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium">
+          ChatGPT解锁
+        </button>
+        <button data-filter="verified" class="filter-btn px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium">
+          完整跑分核实
+        </button>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Brands Cards Grid -->
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="brands-grid">
+    {BRANDS.map((brand) => (
+      <div
+        class="brand-card-item"
+        data-name={brand.name.toLowerCase()}
+        data-alias={brand.alias.toLowerCase()}
+        data-slug={brand.slug}
+        data-lines={brand.lineTypes.join(' ').toLowerCase()}
+        data-ai={brand.aiSupport.chatgpt}
+        data-status={brand.dataStatus}
+      >
+        <BrandCard brand={brand} />
+      </div>
+    ))}
+  </div>
+
+  <!-- Empty Search Result Message -->
+  <div id="no-results" class="hidden py-16 text-center space-y-3">
+    <div class="text-3xl">🔍</div>
+    <h3 class="text-base font-bold text-slate-800">未找到匹配的品牌</h3>
+    <p class="text-xs text-slate-500">请尝试更换搜索词，或清空筛选条件查看完整 31 家品牌名录。</p>
+  </div>
+
+  <!-- In-depth Guidance Sections -->
+  <section class="mt-16 pt-10 border-t border-slate-200 space-y-8">
+    <div class="space-y-2">
+      <h2 class="text-2xl font-bold text-slate-900">
+        📖 如何使用本品牌库做出科学选型决策
+      </h2>
+      <p class="text-xs sm:text-sm text-slate-600 leading-relaxed">
+        我们为 31 家品牌建立了结构化的数据档案。阅读独立评测与比对数据时，建议重点关注以下四个维度：
+      </p>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-xs space-y-2">
+        <div class="font-bold text-slate-900 text-sm flex items-center gap-1.5">
+          <span>🛡️ 维度一：运营年限与运营稳定性</span>
+        </div>
+        <p class="text-xs text-slate-600 leading-relaxed">
+          经营时间在 2 年以上的服务商（如光速云、星岛梦始于 2020 年）具有极强的抗风险能力与固定机房资产，跑路风险远低于刚开业几个月的小作坊。
+        </p>
+      </div>
+
+      <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-xs space-y-2">
+        <div class="font-bold text-slate-900 text-sm flex items-center gap-1.5">
+          <span>⚡ 维度二：线路专线性质与冗余</span>
+        </div>
+        <p class="text-xs text-slate-600 leading-relaxed">
+          优先认准 IEPL 与 IPLC 物理专线，数据内网传输不走公网，即使在大环境网络波动期也能保证晚高峰 0% 丢包。
+        </p>
+      </div>
+
+      <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-xs space-y-2">
+        <div class="font-bold text-slate-900 text-sm flex items-center gap-1.5">
+          <span>🤖 维度三：AI 与流媒体原生纯净度</span>
+        </div>
+        <p class="text-xs text-slate-600 leading-relaxed">
+          支持 ChatGPT 的节点出口必须具备住宅原生属性，避免被 OpenAI 官方反爬虫策略判定为高风险环境直接封禁账号。
+        </p>
+      </div>
+
+      <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-xs space-y-2">
+        <div class="font-bold text-slate-900 text-sm flex items-center gap-1.5">
+          <span>🔄 维度四：自研客户端 vs 通用订阅</span>
+        </div>
+        <p class="text-xs text-slate-600 leading-relaxed">
+          零基础新手可选择提供一键自研客户端的品牌；多设备极客用户则可选择支持标准 Clash、Shadowrocket 订阅导入的品牌。
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 8 Subtopics of Brands Hub -->
+  <section class="mt-12 pt-8 border-t border-slate-200 space-y-4">
+    <div class="flex items-center justify-between">
+      <h2 class="text-2xl font-bold text-slate-900 tracking-tight">
+        🔗 机场品牌下属 8 大细分中心
+      </h2>
+      <span class="text-xs text-slate-400">深度横评与专题入口</span>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      {topic.subtopics.map((sub, sIdx) => (
+        <a
+          href={`/brands/${sub.slug}/`}
+          class="bg-white border border-slate-200 rounded-2xl p-4 hover:border-emerald-500 hover:shadow-md transition-all flex flex-col justify-between"
+        >
+          <div>
+            <div class="text-[10px] font-mono font-bold text-emerald-600 mb-1">BRAND HUB #{sIdx + 1}</div>
+            <div class="font-bold text-slate-900 text-xs sm:text-sm mb-1">{sub.title.split('：')[0]}</div>
+            <p class="text-[11px] text-slate-500 line-clamp-2 leading-relaxed">{sub.heroAnswer}</p>
+          </div>
+          <div class="mt-3 pt-2 border-t border-slate-100 text-[11px] text-emerald-600 font-semibold flex items-center justify-between">
+            <span>进入专题</span>
+            <span>&rarr;</span>
+          </div>
+        </a>
+      ))}
+    </div>
+  </section>
+
+  <!-- Brand FAQs -->
+  <section class="mt-12 pt-8 border-t border-slate-200 space-y-4">
+    <h2 class="text-2xl font-bold text-slate-900 tracking-tight flex items-center gap-2">
+      <span>❓</span>
+      <span>品牌库与评测常见疑问（FAQ）</span>
+    </h2>
+
+    <div class="space-y-3">
+      {faqs.map((faq) => (
+        <div class="bg-white border border-slate-200 rounded-2xl p-4 sm:p-5 shadow-2xs">
+          <h3 class="font-bold text-slate-900 text-sm mb-2 flex items-start gap-2">
+            <span class="text-emerald-600 font-bold">问：</span>
+            <span>{faq.q}</span>
+          </h3>
+          <p class="text-xs sm:text-sm text-slate-600 leading-relaxed pl-6">
+            <strong class="text-emerald-700">答：</strong>{faq.a}
+          </p>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <div class="my-12">
+    <AffiliateDisclaimer />
+  </div>
+
+</BaseLayout>
+
+<script>
+  const searchInput = document.getElementById('brand-search-input') as HTMLInputElement | null;
+  const cards = document.querySelectorAll('.brand-card-item');
+  const noResults = document.getElementById('no-results');
+  const filterBtns = document.querySelectorAll('.filter-btn');
+
+  let activeFilter = 'all';
+
+  function applyFilters() {
+    const q = (searchInput?.value || '').trim().toLowerCase();
+    let visibleCount = 0;
+
+    cards.forEach((cardEl) => {
+      const card = cardEl as HTMLElement;
+      const name = card.dataset.name || '';
+      const alias = card.dataset.alias || '';
+      const lines = card.dataset.lines || '';
+      const ai = card.dataset.ai || '';
+      const status = card.dataset.status || '';
+
+      const matchQuery = !q || name.includes(q) || alias.includes(q);
+
+      let matchFilter = true;
+      if (activeFilter === 'iepl') {
+        matchFilter = lines.includes('iepl') || lines.includes('专线');
+      } else if (activeFilter === 'chatgpt') {
+        matchFilter = ai === 'supported';
+      } else if (activeFilter === 'verified') {
+        matchFilter = status === 'verified';
+      }
+
+      if (matchQuery && matchFilter) {
+        card.style.display = 'block';
+        visibleCount++;
+      } else {
+        card.style.display = 'none';
+      }
+    });
+
+    if (noResults) {
+      if (visibleCount === 0) {
+        noResults.classList.remove('hidden');
+      } else {
+        noResults.classList.add('hidden');
+      }
+    }
+  }
+
+  if (searchInput) {
+    searchInput.addEventListener('input', applyFilters);
+  }
+
+  filterBtns.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      filterBtns.forEach((b) => {
+        b.classList.remove('active', 'bg-slate-900', 'text-white');
+        b.classList.add('bg-slate-100', 'text-slate-700');
+      });
+      btn.classList.add('active', 'bg-slate-900', 'text-white');
+      btn.classList.remove('bg-slate-100', 'text-slate-700');
+
+      activeFilter = btn.getAttribute('data-filter') || 'all';
+      applyFilters();
+    });
+  });
+</script>

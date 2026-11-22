@@ -1,0 +1,408 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { BRANDS, MAIN_PUSH_BRAND } from '@/data/brands';
+import { getTopicBySlug } from '@/data/topics';
+import BrandCard from '@/components/brands/BrandCard.astro';
+import PerformanceReport from '@/components/charts/PerformanceReport.astro';
+import AvailabilityMatrix from '@/components/charts/AvailabilityMatrix.astro';
+import AffiliateDisclaimer from '@/components/brands/AffiliateDisclaimer.astro';
+
+const topic = getTopicBySlug('airport')!;
+const recommendedBrands = BRANDS.slice(0, 6);
+
+const breadcrumbs = [
+  { name: '首页', url: '/' },
+  { name: '机场推荐', url: '/airport/' }
+];
+
+const faqs = [
+  { q: '2026 年选择机场最重要的指标是什么？', a: '首要是「跨境内网物理专线（IEPL/IPLC）」，这是晚高峰不掉线、不卡顿的根本底座；其次是「节点出口的原生住宅属性」，直接决定能否稳定使用 ChatGPT、Claude 与解锁 Netflix 4K；第三是「运营年限与月付支持」，建议选择运营 2 年以上且支持月付试水的老牌服务商。' },
+  { q: '第一主推的光速云相比其他品牌有何优势？', a: '光速云自 2020 年稳定运营至今，采用 IEPL 专线与企业级内网专线双架构，提供 VLESS 高速协议，同时支持自研全平台客户端与 Clash/Shadowrocket 通用订阅。其套餐跨度完善（从 99元/年轻量版到按需独立定制），在晚高峰延迟和 ChatGPT 解锁测试中表现尤为抢眼。' },
+  { q: '为什么强烈建议新手先买月付？', a: '不同用户的本地宽带运营商（电信、联通、移动）以及所在省份到机场中转入口的网络路由存在物理差异。月付能以最低成本（15-25元）实测晚高峰体验，满意后再转年付享受折扣。' },
+  { q: 'IEPL 专线和普通公网中转体验差异有多大？', a: '普通公网中转走公网国际出口，在晚高峰（20:00-23:00）面临严重的运营商 QoS 限速与 20%-40% 的丢包率；而 IEPL 专线属于跨境物理内网传输，完全规避公网拥堵，晚高峰丢包率接近 0%。' },
+  { q: '香港节点为什么打不开 ChatGPT？', a: '这是 OpenAI 官方的地区限制政策。OpenAI 官方服务未向中国香港地区开放 IP 白名单。使用 ChatGPT 必须切换至美国、日本、新加坡、英国或台湾等受支持区域节点。' },
+  { q: '一元或几元钱的极低价机场能当主力吗？', a: '不建议。极低价机场通常超卖严重，公网出口拥挤，且经常发生域名被封锁或商家失联跑路的情况，仅适合用于查阅轻量网页的临时应急备用。' },
+  { q: '购买机场后可以在手机和电脑上同时使用吗？', a: '可以。只要套餐支持多设备并发（如光速云、暮光加速等品牌不限设备），在手机端（小火箭/v2rayNG）与电脑端（Clash Verge Rev）分别导入同一条订阅链接即可同时在线。' },
+  { q: '如果遇到节点全部超时连接不上怎么办？', a: '首先检查本地电脑或手机的系统时间是否精准同步（时间偏差超 60 秒会导致加密握手直接失败）；其次在客户端点击“更新订阅”；第三排查本地是否有其他代理或杀毒软件冲突。' }
+];
+
+const schema = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'CollectionPage',
+    'name': '2026 高速稳定机场推荐指南与精选天梯榜',
+    'description': topic.description,
+    'url': 'https://chatgptzhinan.homes/airport/'
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    'mainEntity': faqs.map(f => ({
+      '@type': 'Question',
+      'name': f.q,
+      'acceptedAnswer': {
+        '@type': 'Answer',
+        'text': f.a
+      }
+    }))
+  }
+];
+---
+
+<BaseLayout
+  title="2026 机场推荐指南｜高速稳定专线梯子精选、测速排行与防坑选型"
+  description="面向需要稳定使用 ChatGPT、Claude、4K 流媒体与外贸办公的中文用户，客观横评光速云、暮光、飞猫、微风等主流品牌，提供真实测速数据、套餐对比与选购依据。"
+  canonical="https://chatgptzhinan.homes/airport/"
+  breadcrumbs={breadcrumbs}
+  schema={schema}
+>
+
+  <article class="max-w-4xl mx-auto py-6 space-y-10">
+    
+    <!-- Hero Header -->
+    <header class="space-y-4">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 text-xs font-semibold">
+        <span>🏆 核心选型决策专题</span>
+        <span>·</span>
+        <span>Pillar Page 权威深度指南</span>
+      </div>
+
+      <h1 class="text-3xl sm:text-5xl font-extrabold text-slate-900 tracking-tight leading-tight">
+        2026 高速稳定机场推荐指南：<br class="hidden sm:inline" />
+        <span class="bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">拒绝晚高峰卡顿与虚假宣传</span>
+      </h1>
+
+      <!-- Answer-First Direct Takeaway Card -->
+      <div class="rounded-2xl bg-gradient-to-r from-emerald-50 via-teal-50 to-emerald-50 border border-emerald-200 p-6 shadow-sm my-6 space-y-3">
+        <div class="flex items-center gap-2 text-emerald-900 font-bold text-sm">
+          <span>⚡ 核心推荐结论先行（Executive Answer-First）</span>
+        </div>
+        <p class="text-sm sm:text-base text-slate-800 leading-relaxed font-medium">
+          综合专线架构、晚高峰丢包实测、OpenAI/Claude 纯净原生 IP 解锁率以及持续运营信誉，<strong>2026 年首选综合旗舰为「光速云」</strong>（2020年老牌、IEPL+企业专线双架构、自研客户端+标准订阅、7档套餐从99元/年至680元/月全面覆盖）。日常备选与高性价比推荐：<strong>暮光加速</strong>（BGP智能调度、多设备协同）、<strong>飞猫云</strong>（免配订阅新手友好、年付约7元/月）、<strong>微风网络</strong>（大流量高性价比）。
+        </p>
+        <div class="pt-3 border-t border-emerald-200/60 flex flex-wrap items-center justify-between gap-2 text-xs text-emerald-700">
+          <span>测评依据：31 家品牌实测跑分数据库</span>
+          <span>更新时间：2026 年 11 月 21 日</span>
+        </div>
+      </div>
+
+      <!-- Table of Contents -->
+      <nav class="bg-white border border-slate-200 rounded-2xl p-4 sm:p-5 shadow-xs">
+        <div class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">目录导航 · 本页核心章节</div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 text-xs">
+          <a href="#candidate-list" class="text-slate-700 hover:text-emerald-600 py-1">一、2026 主流候选品牌清单 &rarr;</a>
+          <a href="#comparison-table" class="text-slate-700 hover:text-emerald-600 py-1">二、机场关键参数横评对比表 &rarr;</a>
+          <a href="#user-personas" class="text-slate-700 hover:text-emerald-600 py-1">三、不同人群精准选型逻辑 &rarr;</a>
+          <a href="#line-tech" class="text-slate-700 hover:text-emerald-600 py-1">四、IEPL、IPLC 与中转技术解析 &rarr;</a>
+          <a href="#node-regions" class="text-slate-700 hover:text-emerald-600 py-1">五、热门节点地区与业务适配 &rarr;</a>
+          <a href="#common-mistakes" class="text-slate-700 hover:text-emerald-600 py-1">六、新手最易踩的 6 大误区 &rarr;</a>
+          <a href="#subtopic-hubs" class="text-slate-700 hover:text-emerald-600 py-1">七、8 大细分二级主题中心 &rarr;</a>
+          <a href="#faq" class="text-slate-700 hover:text-emerald-600 py-1">八、高频常见问题答疑（FAQ） &rarr;</a>
+        </div>
+      </nav>
+    </header>
+
+    <!-- Section 1: Candidate List -->
+    <section id="candidate-list" class="space-y-4 pt-4">
+      <div class="flex items-center justify-between">
+        <div>
+          <h2 class="text-2xl font-bold text-slate-900 tracking-tight">
+            一、2026 主流机场精选候选清单
+          </h2>
+          <p class="text-xs sm:text-sm text-slate-500 mt-1">
+            严格基于品牌数据库实测记录，推荐具备独立专线、完善客服与退换保障的梯子服务。
+          </p>
+        </div>
+        <a href="/brands/" class="text-xs font-semibold text-emerald-600 hover:underline">
+          查看全部 31 家品牌库 &rarr;
+        </a>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {recommendedBrands.map((brand) => (
+          <BrandCard brand={brand} />
+        ))}
+      </div>
+    </section>
+
+    <!-- Section 2: Comparison Table -->
+    <section id="comparison-table" class="space-y-4 pt-6 border-t border-slate-200">
+      <h2 class="text-2xl font-bold text-slate-900 tracking-tight">
+        二、重点品牌核心技术参数横向对比表
+      </h2>
+      <p class="text-xs sm:text-sm text-slate-600 leading-relaxed">
+        杜绝主观吹捧，将价格、专线类型、主要协议、实测延迟、AI 支持度及设备限制进行透明横向比对：
+      </p>
+
+      <div class="overflow-x-auto rounded-2xl border border-slate-200 bg-white shadow-xs">
+        <table class="w-full text-left text-xs border-collapse">
+          <thead>
+            <tr class="bg-slate-50 border-b border-slate-200 text-slate-700 font-semibold whitespace-nowrap">
+              <th class="p-3.5">品牌名称</th>
+              <th class="p-3.5">线路类型</th>
+              <th class="p-3.5">支持协议</th>
+              <th class="p-3.5">入门价格</th>
+              <th class="p-3.5">流量档位</th>
+              <th class="p-3.5">香港延迟(实测)</th>
+              <th class="p-3.5">ChatGPT解锁</th>
+              <th class="p-3.5">优惠券码</th>
+              <th class="p-3.5">官网开通</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-100 text-slate-600">
+            {recommendedBrands.map((b) => (
+              <tr class="hover:bg-slate-50/80 transition-colors whitespace-nowrap">
+                <td class="p-3.5 font-bold text-slate-900">
+                  <a href={`/brands/${b.slug}/`} class="hover:text-emerald-600 underline">
+                    {b.name}
+                  </a>
+                  {b.isMainPush && <span class="ml-1 text-[10px] text-emerald-600 bg-emerald-50 px-1 py-0.5 rounded font-bold">主推</span>}
+                </td>
+                <td class="p-3.5">{b.lineTypes[0] || '专线中转'}</td>
+                <td class="p-3.5 font-mono">{b.protocols.join(', ')}</td>
+                <td class="p-3.5 font-bold text-emerald-600">{b.entryPrice}</td>
+                <td class="p-3.5 font-semibold text-slate-800">{b.entryTraffic}</td>
+                <td class="p-3.5 font-mono text-cyan-600">{b.speedTests[0]?.ping || '待测'}</td>
+                <td class="p-3.5">
+                  <span class={`px-2 py-0.5 rounded text-[10px] font-bold ${b.aiSupport.chatgpt === 'supported' ? 'bg-emerald-50 text-emerald-700' : 'bg-amber-50 text-amber-700'}`}>
+                    {b.aiSupport.chatgpt === 'supported' ? '原生支持' : '视节点'}
+                  </span>
+                </td>
+                <td class="p-3.5 font-mono text-amber-800 font-bold">{b.coupon || '暂无'}</td>
+                <td class="p-3.5">
+                  <a
+                    href={`/go/${b.slug}/`}
+                    target="_blank"
+                    rel="nofollow sponsored noopener"
+                    class="px-2.5 py-1 rounded-lg bg-slate-900 hover:bg-emerald-600 text-white font-semibold transition-colors"
+                  >
+                    直达官网 &rarr;
+                  </a>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <div class="text-[11px] text-slate-400">
+        注：测速数据以 2026-10-19 晚高峰及日常测试记录为准；单位流量成本与优惠后实付以品牌官方结算台为准。
+      </div>
+    </section>
+
+    <!-- Visual Dashboard: Performance & Topology -->
+    <section class="space-y-6 pt-6 border-t border-slate-200">
+      <h2 class="text-2xl font-bold text-slate-900 tracking-tight">
+        三、旗舰性能跑分与专线拓扑可观测看板
+      </h2>
+      <PerformanceReport
+        brandName="光速云"
+        speedTests={MAIN_PUSH_BRAND.speedTests}
+        testDate="2026-10-19"
+        averagePing="62ms"
+        maxDownload="529 Mbps"
+      />
+      <AvailabilityMatrix
+        brandName="光速云"
+        notes="基于 IEPL 原生专线落地节点实测，ChatGPT、Claude、Netflix 原生支持。"
+      />
+    </section>
+
+    <!-- Section 3: User Personas -->
+    <section id="user-personas" class="space-y-4 pt-6 border-t border-slate-200">
+      <h2 class="text-2xl font-bold text-slate-900 tracking-tight">
+        四、不同使用场景人群的精准选型逻辑
+      </h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        
+        <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-xs space-y-2">
+          <div class="flex items-center gap-2 text-emerald-700 font-bold text-sm">
+            <span>🤖</span>
+            <span>AI 工具重度办公人群（ChatGPT / Claude / Cursor）</span>
+          </div>
+          <p class="text-xs text-slate-600 leading-relaxed">
+            <strong>核心痛点：</strong> OpenAI 与 Anthropic 严苛的风控封锁、频繁的 1020 拒绝访问、长文本回答中途中断。
+          </p>
+          <div class="text-xs bg-slate-50 p-3 rounded-xl border border-slate-100 text-slate-700">
+            <strong>推荐解法：</strong> 首选光速云或暮光加速的美区/日区原生 IP 节点，确保出口没有被云服务爬虫污染，保障账号安全。
+          </div>
+        </div>
+
+        <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-xs space-y-2">
+          <div class="flex items-center gap-2 text-cyan-700 font-bold text-sm">
+            <span>🎬</span>
+            <span>4K/8K 追剧与海外流媒体玩家（Netflix / Disney+ / YouTube）</span>
+          </div>
+          <p class="text-xs text-slate-600 leading-relaxed">
+            <strong>核心痛点：</strong> 晚高峰播放频繁转圈、Netflix 提示使用代理仅显示自制剧、画质降至 480P。
+          </p>
+          <div class="text-xs bg-slate-50 p-3 rounded-xl border border-slate-100 text-slate-700">
+            <strong>推荐解法：</strong> 选用带有 IEPL 物理专线保障的香港/新加坡节点，带宽峰值大于 200Mbps，具备非自制剧全区解锁能力。
+          </div>
+        </div>
+
+        <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-xs space-y-2">
+          <div class="flex items-center gap-2 text-purple-700 font-bold text-sm">
+            <span>💼</span>
+            <span>外贸、跨境电商与学术科研团队</span>
+          </div>
+          <p class="text-xs text-slate-600 leading-relaxed">
+            <strong>核心痛点：</strong> 店铺登录 IP 漂移导致封店、谷歌学术文献下载慢、多团队成员同时在线冲突。
+          </p>
+          <div class="text-xs bg-slate-50 p-3 rounded-xl border border-slate-100 text-slate-700">
+            <strong>推荐解法：</strong> 选择提供独立定制原生 IP 或企业级专线的套餐，绑定固定静态节点，杜绝多人共用脏 IP 造成的连带风控。
+          </div>
+        </div>
+
+        <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-xs space-y-2">
+          <div class="flex items-center gap-2 text-amber-700 font-bold text-sm">
+            <span>📱</span>
+            <span>日常轻度使用与备用防失联人群</span>
+          </div>
+          <p class="text-xs text-slate-600 leading-relaxed">
+            <strong>核心痛点：</strong> 平时用量极少，每月花 30 元买按月重置的套餐极不划算；主力梯子遇到突发维护时急需备用。
+          </p>
+          <div class="text-xs bg-slate-50 p-3 rounded-xl border border-slate-100 text-slate-700">
+            <strong>推荐解法：</strong> 购买光速云 147 永久套餐（247GB 不限时不过期）或星岛梦不限时包，一次付费长期防失联。
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Section 4: Line Tech -->
+    <section id="line-tech" class="space-y-4 pt-6 border-t border-slate-200 prose prose-slate max-w-none text-xs sm:text-sm text-slate-700 leading-relaxed">
+      <h2 class="text-2xl font-bold text-slate-900 tracking-tight not-prose">
+        五、IEPL、IPLC 与普通中转技术本质差异
+      </h2>
+      <p>
+        市面上的机场按底层网络链路大致可分为三大技术梯队：
+      </p>
+      <ul>
+        <li><strong>第一梯队：IEPL（国际以太网专线）/ IPLC（国际私有租用线路）：</strong> 国内入口（如广州、上海 BGP）与海外机房（香港、东京）之间走运营商物理内网闭环，数据完全不经过公网 GFW 防火墙。<strong>优点：</strong> 晚高峰丢包率为 0%，几乎不存在被封锁可能；<strong>缺点：</strong> 专线月租成本高昂。</li>
+        <li><strong>第二梯队：国内公网 BGP 隧道中转：</strong> 国内有多线 BGP 服务器接收客户端连接，再通过加密隧道转发至公网出口。<strong>优点：</strong> 价格适中；<strong>缺点：</strong> 敏感时期公网出口容易受到干扰。</li>
+        <li><strong>第三梯队：直连公网梯子（含大量一元机场）：</strong> 客户端直接连接境外海外服务器。<strong>缺点：</strong> 晚高峰丢包率高达 30%-60%，极易被直接阻断阻断 IP。</li>
+      </ul>
+    </section>
+
+    <!-- Section 5: Common Mistakes -->
+    <section id="common-mistakes" class="space-y-4 pt-6 border-t border-slate-200">
+      <h2 class="text-2xl font-bold text-slate-900 tracking-tight">
+        六、新手挑选机场最容易犯的 6 大误区
+      </h2>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+        <div class="bg-rose-50/60 border border-rose-200 rounded-xl p-3.5 space-y-1">
+          <div class="font-bold text-rose-900">❌ 误区一：只看节点测速峰值图</div>
+          <div class="text-slate-600 leading-relaxed">很多测速图是在凌晨低谷期跑出来的千兆数据，真正决定体验的是晚高峰 20:00-23:00 的丢包率和抖动。</div>
+        </div>
+        <div class="bg-rose-50/60 border border-rose-200 rounded-xl p-3.5 space-y-1">
+          <div class="font-bold text-rose-900">❌ 误区二：盲信所谓“永久无限流量”</div>
+          <div class="text-slate-600 leading-relaxed">以超低价号称“几十元永久无限流量”的商家 99% 在跑路前夕割韭菜，正规专线每兆流量都有高昂物理成本。</div>
+        </div>
+        <div class="bg-rose-50/60 border border-rose-200 rounded-xl p-3.5 space-y-1">
+          <div class="font-bold text-rose-900">❌ 误区三：初次选购就直接买三年付</div>
+          <div class="text-slate-600 leading-relaxed">哪怕是老牌机场，初次使用也应首选月付或小包套餐，在自己的设备和宽带运营商实测满意后再续长约。</div>
+        </div>
+        <div class="bg-rose-50/60 border border-rose-200 rounded-xl p-3.5 space-y-1">
+          <div class="font-bold text-rose-900">❌ 误区四：以为节点数量越多就越好</div>
+          <div class="text-slate-600 leading-relaxed">几百个垃圾公网节点不如 10 个高质量的 IEPL 专线节点；有效可用率远重于虚标的数字规模。</div>
+        </div>
+        <div class="bg-rose-50/60 border border-rose-200 rounded-xl p-3.5 space-y-1">
+          <div class="font-bold text-rose-900">❌ 误区五：忽略了线路倍率消耗</div>
+          <div class="text-slate-600 leading-relaxed">有些 3x 倍率节点看 10GB 视频会扣除 30GB 流量，购买前务必在后台查看节点倍率表。</div>
+        </div>
+        <div class="bg-rose-50/60 border border-rose-200 rounded-xl p-3.5 space-y-1">
+          <div class="font-bold text-rose-900">❌ 误区六：以为开了代理所有软件都自动翻墙</div>
+          <div class="text-slate-600 leading-relaxed">普通系统代理仅接管浏览器流量，命令行终端、某些游戏或软件需要开启客户端的 TUN 虚拟网卡模式。</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 6: 8 Subtopic Hubs -->
+    <section id="subtopic-hubs" class="space-y-4 pt-6 border-t border-slate-200">
+      <div class="flex items-center justify-between">
+        <h2 class="text-2xl font-bold text-slate-900 tracking-tight">
+          七、机场推荐下属 8 大细分主题中心
+        </h2>
+        <span class="text-xs text-slate-400">承接长尾与具体问题</span>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        {topic.subtopics.map((sub, sIdx) => (
+          <div class="bg-white border border-slate-200 rounded-2xl p-5 flex flex-col justify-between hover:border-emerald-500 hover:shadow-md transition-all">
+            <div>
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-xs font-mono font-bold text-emerald-600">SUBTOPIC #{sIdx + 1}</span>
+                <span class="text-[10px] px-2 py-0.5 rounded bg-slate-100 text-slate-600 uppercase font-medium">
+                  {sub.searchIntent}
+                </span>
+              </div>
+              <h3 class="font-bold text-base text-slate-900 mb-1.5">
+                <a href={`/airport/${sub.slug}/`} class="hover:text-emerald-600 transition-colors">
+                  {sub.title}
+                </a>
+              </h3>
+              <p class="text-xs text-slate-600 leading-relaxed mb-3 line-clamp-2">
+                {sub.heroAnswer}
+              </p>
+            </div>
+            <div class="pt-3 border-t border-slate-100 flex items-center justify-between text-xs">
+              <span class="text-slate-400">含独立实测与FAQ</span>
+              <a href={`/airport/${sub.slug}/`} class="text-emerald-600 font-semibold hover:underline">
+                进入专题 &rarr;
+              </a>
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <!-- Section 7: FAQ -->
+    <section id="faq" class="space-y-4 pt-6 border-t border-slate-200">
+      <h2 class="text-2xl font-bold text-slate-900 tracking-tight flex items-center gap-2">
+        <span>❓</span>
+        <span>机场推荐高频问答（FAQ）</span>
+      </h2>
+
+      <div class="space-y-3">
+        {faqs.map((faq) => (
+          <div class="bg-white border border-slate-200 rounded-2xl p-4 sm:p-5 shadow-2xs">
+            <h3 class="font-bold text-slate-900 text-sm mb-2 flex items-start gap-2">
+              <span class="text-emerald-600 font-bold">问：</span>
+              <span>{faq.q}</span>
+            </h3>
+            <p class="text-xs sm:text-sm text-slate-600 leading-relaxed pl-6">
+              <strong class="text-emerald-700">答：</strong>{faq.a}
+            </p>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <!-- Section 8: Related Pillar Pages Interlinks -->
+    <section class="pt-6 border-t border-slate-200 space-y-3">
+      <h3 class="font-bold text-slate-900 text-sm">
+        🔗 相关一级专题推荐导航：
+      </h3>
+      <div class="flex flex-wrap gap-2 text-xs">
+        <a href="/pricing/" class="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-emerald-50 hover:text-emerald-700 text-slate-700 transition-colors">
+          价格与套餐专题（按月/年付省钱对比） &rarr;
+        </a>
+        <a href="/brands/" class="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-emerald-50 hover:text-emerald-700 text-slate-700 transition-colors">
+          31家机场品牌数据库全景 &rarr;
+        </a>
+        <a href="/ai-streaming/" class="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-emerald-50 hover:text-emerald-700 text-slate-700 transition-colors">
+          ChatGPT 与流媒体专区 &rarr;
+        </a>
+        <a href="/clients/" class="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-emerald-50 hover:text-emerald-700 text-slate-700 transition-colors">
+          全平台代理客户端下载与配置 &rarr;
+        </a>
+      </div>
+    </section>
+
+    <div class="pt-4">
+      <AffiliateDisclaimer />
+    </div>
+
+  </article>
+
+</BaseLayout>

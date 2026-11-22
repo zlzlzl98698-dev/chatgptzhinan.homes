@@ -1,0 +1,153 @@
+---
+export interface Props {
+  brandName: string;
+  chatgpt?: 'supported' | 'partial' | 'unsupported' | 'untested';
+  claude?: 'supported' | 'partial' | 'unsupported' | 'untested';
+  gemini?: 'supported' | 'partial' | 'unsupported' | 'untested';
+  netflix?: 'supported' | 'partial' | 'unsupported' | 'untested';
+  disney?: 'supported' | 'partial' | 'unsupported' | 'untested';
+  youtube?: 'supported' | 'partial' | 'unsupported' | 'untested';
+  tiktok?: 'supported' | 'partial' | 'unsupported' | 'untested';
+  spotify?: 'supported' | 'partial' | 'unsupported' | 'untested';
+  notes?: string;
+}
+
+const {
+  brandName,
+  chatgpt = 'supported',
+  claude = 'supported',
+  gemini = 'partial',
+  netflix = 'supported',
+  disney = 'supported',
+  youtube = 'supported',
+  tiktok = 'supported',
+  spotify = 'supported',
+  notes = '实测基于原生出口节点，非自制剧全解锁与 AI 原生支持。'
+} = Astro.props;
+
+interface ServiceItem {
+  name: string;
+  category: 'AI生产力工具' | '海外流媒体';
+  status: 'supported' | 'partial' | 'unsupported' | 'untested';
+  detail: string;
+}
+
+const services: ServiceItem[] = [
+  {
+    name: 'ChatGPT (GPT-4o)',
+    category: 'AI生产力工具',
+    status: chatgpt,
+    detail: chatgpt === 'supported' ? '原生IP直连，无拒绝访问' : (chatgpt === 'partial' ? '视节点而定（美/日支持）' : '需额外配置')
+  },
+  {
+    name: 'Claude 3.5 Sonnet',
+    category: 'AI生产力工具',
+    status: claude,
+    detail: claude === 'supported' ? '通过严苛风控，无需降级' : '需纯净原生节点'
+  },
+  {
+    name: 'Google Gemini',
+    category: 'AI生产力工具',
+    status: gemini,
+    detail: gemini === 'supported' ? '全区支持，无区域报错' : (gemini === 'partial' ? '建议选美区/日区节点' : '受限')
+  },
+  {
+    name: 'Netflix (奈飞)',
+    category: '海外流媒体',
+    status: netflix,
+    detail: netflix === 'supported' ? '非自制剧与4K完整解锁' : '仅自制剧'
+  },
+  {
+    name: 'Disney+ (迪士尼)',
+    category: '海外流媒体',
+    status: disney,
+    detail: disney === 'supported' ? '全区解锁，支持IMAX' : '需指定节点'
+  },
+  {
+    name: 'YouTube 4K/8K',
+    category: '海外流媒体',
+    status: youtube,
+    detail: youtube === 'supported' ? '秒开4K 60FPS，零丢包' : '一般'
+  },
+  {
+    name: 'TikTok (免拔卡)',
+    category: '海外流媒体',
+    status: tiktok,
+    detail: tiktok === 'supported' ? '支持国际版正常刷视频' : (tiktok === 'partial' ? '部分地区需伪装' : '受限')
+  },
+  {
+    name: 'Spotify',
+    category: '海外流媒体',
+    status: spotify,
+    detail: spotify === 'supported' ? '全区曲库无障碍播放' : '需代理登录'
+  }
+];
+
+function getBadge(status: string) {
+  switch (status) {
+    case 'supported':
+      return { text: 'Operational / 已验证', bg: 'bg-emerald-950 text-emerald-300 border-emerald-800' };
+    case 'partial':
+      return { text: 'Partial / 视节点', bg: 'bg-amber-950 text-amber-300 border-amber-800' };
+    case 'unsupported':
+      return { text: 'Unavailable / 未解锁', bg: 'bg-rose-950 text-rose-300 border-rose-800' };
+    default:
+      return { text: 'Not Tested / 未测', bg: 'bg-slate-900 text-slate-400 border-slate-700' };
+  }
+}
+---
+
+<div class="my-6 rounded-2xl bg-slate-950 border border-slate-800 text-slate-100 p-5 sm:p-6 shadow-2xl font-mono text-xs overflow-hidden">
+  
+  <!-- Header Bar -->
+  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-4 border-b border-slate-800">
+    <div class="flex items-center gap-2">
+      <span class="inline-block w-2.5 h-2.5 rounded-full bg-cyan-400 animate-pulse"></span>
+      <span class="font-bold text-sm tracking-wide text-white">
+        🎬 {brandName} · AI 与流媒体解锁矩阵
+      </span>
+      <span class="px-2 py-0.5 rounded text-[10px] bg-slate-800 text-cyan-300 border border-slate-700">
+        Service Availability Matrix
+      </span>
+    </div>
+    <div class="text-slate-400 text-[11px]">
+      测试协议: <span class="text-slate-200">RegionRestrictionCheck</span>
+    </div>
+  </div>
+
+  <!-- Grid of Services -->
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 my-4">
+    {services.map((svc) => {
+      const b = getBadge(svc.status);
+      return (
+        <div class="bg-slate-900/90 border border-slate-800 rounded-xl p-3 flex flex-col justify-between hover:border-slate-700 transition-colors">
+          <div>
+            <div class="flex items-center justify-between mb-1.5">
+              <span class="font-bold text-slate-200 text-xs">{svc.name}</span>
+              <span class="text-[10px] text-slate-500">{svc.category}</span>
+            </div>
+            <p class="text-slate-400 text-[11px] leading-relaxed mb-3">
+              {svc.detail}
+            </p>
+          </div>
+          <div>
+            <span class={`inline-block px-2 py-0.5 rounded text-[10px] font-semibold border whitespace-nowrap ${b.bg}`}>
+              {b.text}
+            </span>
+          </div>
+        </div>
+      );
+    })}
+  </div>
+
+  <!-- Notes & Disclaimer -->
+  <div class="pt-3 border-t border-slate-800/80 flex flex-col sm:flex-row items-center justify-between text-[11px] text-slate-400 gap-2">
+    <div>
+      说明: <span class="text-slate-300">{notes}</span>
+    </div>
+    <div class="text-[10px] text-slate-500 font-mono">
+      [动态核查·节点轮换机制]
+    </div>
+  </div>
+
+</div>

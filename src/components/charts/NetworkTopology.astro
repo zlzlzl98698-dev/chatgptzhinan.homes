@@ -1,0 +1,106 @@
+---
+export interface Props {
+  brandName: string;
+  ingressType?: string;
+  transitType?: string;
+  landingRegions?: string[];
+}
+
+const {
+  brandName,
+  ingressType = '上海/广州/北京 BGP 智能多线中转',
+  transitType = 'IEPL / 全球 IPLC 专线物理通道 (绕过公网GFW)',
+  landingRegions = ['中国香港', '日本东京', '新加坡', '美西洛杉矶', '欧洲法兰克福']
+} = Astro.props;
+---
+
+<div class="my-6 rounded-2xl bg-slate-950 border border-slate-800 text-slate-100 p-5 sm:p-6 shadow-2xl font-mono text-xs overflow-hidden">
+  
+  <!-- Header Bar -->
+  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-4 border-b border-slate-800">
+    <div class="flex items-center gap-2">
+      <span class="inline-block w-2.5 h-2.5 rounded-full bg-blue-500 animate-pulse"></span>
+      <span class="font-bold text-sm tracking-wide text-white">
+        🗺️ {brandName} · 专线网络拓扑与传输可观测图
+      </span>
+      <span class="px-2 py-0.5 rounded text-[10px] bg-slate-800 text-blue-400 border border-slate-700">
+        Network Path Observatory
+      </span>
+    </div>
+    <div class="text-slate-400 text-[11px]">
+      传输架构: <span class="text-slate-200">全链路端到端闭环加密</span>
+    </div>
+  </div>
+
+  <!-- Flowchart Visual -->
+  <div class="grid grid-cols-1 md:grid-cols-4 gap-4 my-6 relative">
+    
+    <!-- Step 1: User Client -->
+    <div class="bg-slate-900 border border-slate-800 rounded-xl p-4 flex flex-col justify-between">
+      <div>
+        <div class="text-[10px] text-slate-500 uppercase font-bold tracking-wider mb-1">01. 接入源头</div>
+        <div class="font-bold text-slate-200 text-sm mb-2">本地终端设备</div>
+        <div class="text-[11px] text-slate-400 leading-relaxed">
+          手机 / PC / 路由器 (Clash Verge Rev / Shadowrocket / v2rayN)
+        </div>
+      </div>
+      <div class="mt-3 text-[10px] text-emerald-400 bg-emerald-950/60 border border-emerald-900 px-2 py-1 rounded">
+        VLESS / Trojan 强加密封装
+      </div>
+    </div>
+
+    <!-- Step 2: BGP Ingress -->
+    <div class="bg-slate-900 border border-slate-800 rounded-xl p-4 flex flex-col justify-between">
+      <div>
+        <div class="text-[10px] text-slate-500 uppercase font-bold tracking-wider mb-1">02. 国内中转入口</div>
+        <div class="font-bold text-slate-200 text-sm mb-2">BGP 多线智能调度</div>
+        <div class="text-[11px] text-slate-400 leading-relaxed">
+          {ingressType}，隐藏用户本地真实公网 IP。
+        </div>
+      </div>
+      <div class="mt-3 text-[10px] text-cyan-400 bg-cyan-950/60 border border-cyan-900 px-2 py-1 rounded">
+        多线容灾 · 毫秒级防丢包
+      </div>
+    </div>
+
+    <!-- Step 3: Transit Trunk -->
+    <div class="bg-slate-900 border border-cyan-700/60 rounded-xl p-4 flex flex-col justify-between shadow-lg shadow-cyan-950/30">
+      <div>
+        <div class="text-[10px] text-cyan-400 uppercase font-bold tracking-wider mb-1">03. 跨境主干专线</div>
+        <div class="font-bold text-cyan-200 text-sm mb-2">IEPL / IPLC 专线</div>
+        <div class="text-[11px] text-slate-300 leading-relaxed">
+          {transitType}。数据不走公网，完全规避大环境封锁。
+        </div>
+      </div>
+      <div class="mt-3 text-[10px] text-white bg-cyan-600 px-2 py-1 rounded font-bold">
+        物理专线传输 · 0% 晚高峰丢包
+      </div>
+    </div>
+
+    <!-- Step 4: Landing Egress -->
+    <div class="bg-slate-900 border border-slate-800 rounded-xl p-4 flex flex-col justify-between">
+      <div>
+        <div class="text-[10px] text-slate-500 uppercase font-bold tracking-wider mb-1">04. 海外落地与目标</div>
+        <div class="font-bold text-slate-200 text-sm mb-2">原生 IP 解锁集群</div>
+        <div class="text-[11px] text-slate-400 leading-relaxed">
+          {landingRegions.join(' · ')}
+        </div>
+      </div>
+      <div class="mt-3 text-[10px] text-purple-400 bg-purple-950/60 border border-purple-900 px-2 py-1 rounded">
+        ChatGPT / Claude / Netflix 全开
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Footer Annotation -->
+  <div class="pt-3 border-t border-slate-800/80 flex flex-col sm:flex-row items-center justify-between text-[11px] text-slate-400 gap-2">
+    <div>
+      技术特点: <span class="text-slate-300">全程运营商内网专线闭环传输，防止流量特征被深度包检测 (DPI) 与 QoS 限制识别。</span>
+    </div>
+    <div class="text-[10px] text-slate-500 font-mono">
+      [chatgpt指南·拓扑核查]
+    </div>
+  </div>
+
+</div>

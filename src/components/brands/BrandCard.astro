@@ -1,0 +1,133 @@
+---
+import type { BrandItem } from '@/data/brands';
+
+export interface Props {
+  brand: BrandItem;
+}
+
+const { brand } = Astro.props;
+---
+
+<div class={`rounded-2xl border transition-all duration-300 p-5 flex flex-col justify-between bg-white relative ${brand.isMainPush ? 'border-emerald-500 shadow-md ring-2 ring-emerald-500/20' : 'border-slate-200 hover:border-slate-300 hover:shadow-lg'}`}>
+  
+  {brand.isMainPush && (
+    <div class="absolute -top-3 left-5 bg-gradient-to-r from-emerald-600 to-teal-600 text-white text-[11px] font-bold px-3 py-0.5 rounded-full shadow-sm">
+      🌟 本站第一主推 · 综合旗舰
+    </div>
+  )}
+
+  <div>
+    <!-- Top Row: Logo, Name, Badge -->
+    <div class="flex items-start justify-between gap-3 mb-3">
+      <div class="flex items-center gap-3">
+        <div class="relative w-12 h-12 flex-shrink-0">
+          <img
+            src={brand.logo}
+            alt={`${brand.name} Logo`}
+            class="w-12 h-12 rounded-xl object-contain bg-slate-50 border border-slate-100 p-1 shadow-xs"
+            loading="lazy"
+            onerror="this.style.display='none'; if(this.nextElementSibling) this.nextElementSibling.style.display='flex';"
+          />
+          <div
+            class="hidden w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 text-white font-bold text-lg items-center justify-center shadow-xs border border-emerald-400 select-none"
+          >
+            {brand.name.slice(0, 1)}
+          </div>
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <h3 class="font-bold text-base text-slate-900 leading-snug">
+              {brand.name}
+            </h3>
+            {brand.alias && (
+              <span class="text-xs text-slate-400 font-mono">({brand.alias})</span>
+            )}
+          </div>
+          <div class="text-xs text-slate-500 mt-0.5">
+            运营历史: <span class="font-medium text-slate-700">{brand.establishedYear}</span>
+          </div>
+        </div>
+      </div>
+      
+      <div class="flex flex-col items-end">
+        <div class="flex items-center gap-1 bg-amber-50 text-amber-700 border border-amber-200 px-2 py-0.5 rounded-lg text-xs font-bold">
+          <span>★</span>
+          <span>{brand.rating.toFixed(1)}</span>
+        </div>
+        <span class="text-[10px] text-slate-400 mt-0.5">综合评分</span>
+      </div>
+    </div>
+
+    <!-- Line and Protocol Tags -->
+    <div class="flex flex-wrap gap-1.5 my-3">
+      {brand.lineTypes.map((line) => (
+        <span class="text-[11px] font-medium px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-700 border border-emerald-100">
+          {line}
+        </span>
+      ))}
+      {brand.protocols.slice(0, 2).map((proto) => (
+        <span class="text-[11px] font-medium px-2 py-0.5 rounded-md bg-slate-100 text-slate-600">
+          {proto}
+        </span>
+      ))}
+      {brand.aiSupport.chatgpt === 'supported' && (
+        <span class="text-[11px] font-medium px-2 py-0.5 rounded-md bg-cyan-50 text-cyan-700 border border-cyan-100">
+          ChatGPT 解锁
+        </span>
+      )}
+    </div>
+
+    <!-- Description -->
+    <p class="text-xs text-slate-600 line-clamp-2 leading-relaxed mb-4">
+      {brand.description}
+    </p>
+
+    <!-- Pricing Summary Block -->
+    <div class="bg-slate-50 rounded-xl p-3 mb-4 flex items-center justify-between border border-slate-100">
+      <div>
+        <div class="text-[10px] text-slate-400 uppercase">起步门槛</div>
+        <div class="font-bold text-slate-900 text-sm">{brand.entryPrice}</div>
+      </div>
+      <div class="text-right">
+        <div class="text-[10px] text-slate-400 uppercase">流量档位</div>
+        <div class="font-semibold text-slate-700 text-xs">{brand.entryTraffic}</div>
+      </div>
+    </div>
+
+    <!-- Coupon Badge with Click-to-Copy -->
+    {brand.coupon && (
+      <div
+        class="flex items-center justify-between bg-amber-50/80 hover:bg-amber-100/90 border border-dashed border-amber-300 rounded-xl px-3 py-1.5 mb-4 text-xs cursor-pointer group/coupon transition-all select-none"
+        data-copy-coupon={brand.coupon}
+        title="点击一键复制优惠码"
+      >
+        <div class="text-amber-800 flex items-center gap-1.5">
+          <span>专属立减码:</span>
+          <code class="font-mono font-bold bg-white px-2 py-0.5 rounded text-amber-900 border border-amber-200 group-hover/coupon:border-amber-400 transition-colors">{brand.coupon}</code>
+        </div>
+        <span class="text-[10px] text-amber-700 font-semibold bg-amber-200/60 px-1.5 py-0.5 rounded flex items-center gap-0.5">
+          <span>📋 复制</span>
+        </span>
+      </div>
+    )}
+  </div>
+
+  <!-- Action CTA Area -->
+  <div class="pt-3 border-t border-slate-100 flex items-center gap-2">
+    <a
+      href={`/brands/${brand.slug}/`}
+      class="flex-1 text-center py-2 px-3 text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-xl transition-colors whitespace-nowrap"
+    >
+      完整评测 & 节点档案
+    </a>
+    <a
+      href={`/go/${brand.slug}/`}
+      target="_blank"
+      rel="nofollow sponsored noopener"
+      class={`flex-1 text-center py-2 px-3 text-xs font-bold rounded-xl transition-all shadow-sm whitespace-nowrap ${brand.isMainPush ? 'bg-emerald-600 hover:bg-emerald-700 text-white shadow-emerald-600/20' : 'bg-slate-900 hover:bg-slate-800 text-white'}`}
+    >
+      官网开通入口 &rarr;
+    </a>
+  </div>
+
+</div>

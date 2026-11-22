@@ -1,0 +1,114 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { COMPARISONS } from '@/data/comparisons';
+import { BRANDS } from '@/data/brands';
+import AffiliateDisclaimer from '@/components/brands/AffiliateDisclaimer.astro';
+
+const breadcrumbs = [
+  { name: '首页', url: '/' },
+  { name: '品牌横向对比', url: '/compare/' }
+];
+---
+
+<BaseLayout
+  title="主流机场品牌横向深度对比中心：同台跑分、专线PK与性价比选型 | chatgpt指南"
+  description="客观对比光速云、暮光加速、飞猫云、微风网络等主流机场品牌。提供同口径核心参数表、价格与流量计算、晚高峰测速差异及适合人群精准匹配。"
+  canonical="https://chatgptzhinan.homes/compare/"
+  breadcrumbs={breadcrumbs}
+>
+  <div class="max-w-6xl mx-auto py-8 px-4 sm:px-6 lg:px-8 space-y-10">
+
+    <!-- Header Hero -->
+    <header class="text-center max-w-3xl mx-auto space-y-4">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-50 text-emerald-800 text-xs font-semibold border border-emerald-200">
+        <span>⚔️ 旗舰 PK · 同口径横评 · 拒绝双标</span>
+      </div>
+      <h1 class="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">
+        机场品牌横向深度对比中心
+      </h1>
+      <p class="text-base text-slate-600 leading-relaxed">
+        告别主观营销宣传。我们精选市场上定位接近、具有真实用户选型冲突的旗舰服务商，从专线架构、单位流量单价、AI纯净度与客户端门槛展开同台深度客观对比。
+      </p>
+    </header>
+
+    <!-- Comparison Cards Grid -->
+    <section class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      {COMPARISONS.map((comp) => {
+        const brandA = BRANDS.find(b => b.slug === comp.brandASlug);
+        const brandB = BRANDS.find(b => b.slug === comp.brandBSlug);
+        return (
+          <div class="bg-white border border-slate-200 rounded-3xl p-6 shadow-sm hover:shadow-md hover:border-emerald-300 transition-all flex flex-col justify-between space-y-5">
+            
+            <div class="space-y-4">
+              <!-- Visual Face-off Header -->
+              <div class="flex items-center justify-between bg-slate-50 rounded-2xl p-4 border border-slate-100">
+                <div class="flex items-center gap-2 text-center">
+                  <span class="font-bold text-slate-900 text-sm">{brandA?.name}</span>
+                </div>
+                <div class="w-8 h-8 rounded-full bg-emerald-100 text-emerald-800 font-extrabold text-xs flex items-center justify-center">
+                  VS
+                </div>
+                <div class="flex items-center gap-2 text-center">
+                  <span class="font-bold text-slate-900 text-sm">{brandB?.name}</span>
+                </div>
+              </div>
+
+              <h2 class="text-base font-bold text-slate-900 line-clamp-2">
+                {comp.title}
+              </h2>
+
+              <p class="text-xs text-slate-600 line-clamp-3 leading-relaxed">
+                {comp.verdict}
+              </p>
+
+              <div class="space-y-1.5 text-[11px] text-slate-500 border-t border-slate-100 pt-3">
+                <div class="flex justify-between">
+                  <span>线路对比：</span>
+                  <strong class="text-slate-700">{brandA?.lineTypes[0]} vs {brandB?.lineTypes[0]}</strong>
+                </div>
+                <div class="flex justify-between">
+                  <span>资费起步：</span>
+                  <strong class="text-slate-700">{brandA?.entryPrice} vs {brandB?.entryPrice}</strong>
+                </div>
+              </div>
+            </div>
+
+            <div class="pt-2">
+              <a
+                href={`/compare/${comp.slug}/`}
+                class="block w-full text-center py-2.5 rounded-xl bg-slate-900 hover:bg-emerald-600 text-white font-semibold text-xs transition-colors shadow-sm"
+              >
+                查看完整同台对比大表 &rarr;
+              </a>
+            </div>
+
+          </div>
+        );
+      })}
+    </section>
+
+    <!-- Comparison Principles Box -->
+    <section class="bg-slate-50 border border-slate-200 rounded-2xl p-6 sm:p-8 space-y-4">
+      <h3 class="text-base font-bold text-slate-900">
+        💡 品牌横向对比核心原则
+      </h3>
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 text-xs text-slate-600 leading-relaxed">
+        <div>
+          <strong class="text-slate-800 block text-sm mb-1">1. 同等口径数据</strong>
+          <p>所有测速对比均在同一网络环境（中国电信 1000M + 晚高峰核心时段）下同时跑分，杜绝拿白天非高峰对比他人晚高峰。</p>
+        </div>
+        <div>
+          <strong class="text-slate-800 block text-sm mb-1">2. 拒绝机械两两组合</strong>
+          <p>本站坚决不搞 31×30 种无意义的低质拼凑页面，只做用户真实搜索决策中面临的经典强强选型组合。</p>
+        </div>
+        <div>
+          <strong class="text-slate-800 block text-sm mb-1">3. 双向客观呈现</strong>
+          <p>每篇对比均明确列出双方的适用人群与明确局限，既推荐各自的亮点，也如实提示防坑建议。</p>
+        </div>
+      </div>
+    </section>
+
+    <AffiliateDisclaimer />
+
+  </div>
+</BaseLayout>

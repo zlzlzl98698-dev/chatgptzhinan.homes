@@ -1,0 +1,55 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+---
+
+<BaseLayout
+  title="站内全量内容搜索 | chatgpt指南"
+  description="即时搜索 chatgpt指南 全站 80 大专题中心、31 家机场品牌评测、客户端教程与故障排查知识库。"
+  canonical="https://chatgptzhinan.homes/search/"
+  breadcrumbs={[
+    { name: '首页', url: '/' },
+    { name: '全站搜索', url: '/search/' }
+  ]}
+>
+  <div class="max-w-4xl mx-auto py-8">
+    <div class="mb-8 text-center space-y-2">
+      <h1 class="text-3xl font-extrabold text-slate-900">
+        🔍 站内知识与品牌库即时检索
+      </h1>
+      <p class="text-sm text-slate-500">
+        基于 Pagefind 静态索引引擎，秒级查找教程、错误排查方案或机场评测。
+      </p>
+    </div>
+
+    <!-- Search container where Pagefind UI mounts -->
+    <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm min-h-[400px]">
+      <div id="search"></div>
+    </div>
+  </div>
+
+  <script is:inline src="/pagefind/pagefind-ui.js"></script>
+  <script is:inline>
+    window.addEventListener('DOMContentLoaded', () => {
+      if (window.PagefindUI) {
+        new PagefindUI({
+          element: '#search',
+          showSubResults: true,
+          showImages: false,
+          translations: {
+            placeholder: '输入关键词搜索（如：ChatGPT、Clash、光速云、超时...）',
+            clear_search: '清除',
+            load_more: '加载更多结果',
+            search_label: '搜索',
+            filters_label: '筛选',
+            zero_results: '未找到包含 [SEARCH_TERM] 的相关内容',
+            many_results: '找到 [COUNT] 条相关结果',
+            one_result: '找到 1 条相关结果',
+            alt_search: '未找到 [SEARCH_TERM]，显示类似结果',
+            search_suggestion: '您是否要搜索 [SEARCH_TERM]？',
+            searching: '正在搜索...'
+          }
+        });
+      }
+    });
+  </script>
+</BaseLayout>

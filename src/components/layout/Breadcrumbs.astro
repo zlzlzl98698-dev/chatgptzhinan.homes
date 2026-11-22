@@ -1,0 +1,40 @@
+---
+export interface BreadcrumbItem {
+  name: string;
+  url: string;
+}
+
+export interface Props {
+  items: BreadcrumbItem[];
+}
+
+const { items } = Astro.props;
+const siteUrl = 'https://chatgptzhinan.homes';
+
+const breadcrumbSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  'itemListElement': items.map((item, index) => ({
+    '@type': 'ListItem',
+    'position': index + 1,
+    'name': item.name,
+    'item': item.url.startsWith('http') ? item.url : `${siteUrl}${item.url}`
+  }))
+};
+---
+
+<nav aria-label="面包屑导航" class="my-4 text-xs text-slate-500">
+  <ol class="flex items-center flex-wrap gap-1.5">
+    {items.map((item, idx) => (
+      <li class="flex items-center gap-1.5">
+        {idx > 0 && <span class="text-slate-300">/</span>}
+        {idx === items.length - 1 ? (
+          <span class="text-slate-800 font-medium" aria-current="page">{item.name}</span>
+        ) : (
+          <a href={item.url} class="hover:text-emerald-600 transition-colors">{item.name}</a>
+        )}
+      </li>
+    ))}
+  </ol>
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbSchema)} />
+</nav>

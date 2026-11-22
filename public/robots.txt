@@ -1,0 +1,24 @@
+User-agent: *
+Allow: /
+Disallow: /go/
+
+# Major Search Engine Crawlers
+User-agent: Googlebot
+Allow: /
+Disallow: /go/
+
+User-agent: bingbot
+Allow: /
+Disallow: /go/
+
+User-agent: Baiduspider
+Allow: /
+Disallow: /go/
+
+User-agent: yisouspider
+Allow: /
+Disallow: /go/
+
+# XML Sitemap Declarations
+Sitemap: https://chatgptzhinan.homes/sitemap-index.xml
+Sitemap: https://chatgptzhinan.homes/sitemap.xml

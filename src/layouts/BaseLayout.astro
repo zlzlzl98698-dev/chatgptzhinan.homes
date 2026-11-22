@@ -1,0 +1,165 @@
+---
+import SEOHead from '@/components/seo/SEOHead.astro';
+import Header from '@/components/layout/Header.astro';
+import Footer from '@/components/layout/Footer.astro';
+import Breadcrumbs, { type BreadcrumbItem } from '@/components/layout/Breadcrumbs.astro';
+
+export interface Props {
+  title: string;
+  description: string;
+  canonical?: string;
+  breadcrumbs?: BreadcrumbItem[];
+  schema?: Record<string, any> | Record<string, any>[];
+  ogType?: 'website' | 'article';
+  robots?: string;
+  publishDate?: string;
+  modifiedDate?: string;
+}
+
+const {
+  title,
+  description,
+  canonical,
+  breadcrumbs = [],
+  schema,
+  ogType = 'website',
+  robots,
+  publishDate,
+  modifiedDate
+} = Astro.props;
+---
+
+<!doctype html>
+<html lang="zh-CN" class="scroll-smooth">
+  <head>
+    <SEOHead
+      title={title}
+      description={description}
+      canonical={canonical}
+      ogType={ogType}
+      schema={schema}
+      robots={robots}
+      publishDate={publishDate}
+      modifiedDate={modifiedDate}
+    />
+  </head>
+  <body class="bg-slate-50 text-slate-800 font-sans antialiased min-h-screen flex flex-col selection:bg-emerald-100 selection:text-emerald-900">
+    <Header />
+    
+    <div class="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+      {breadcrumbs.length > 0 && <Breadcrumbs items={breadcrumbs} />}
+      <slot />
+    </div>
+
+    <Footer />
+
+    <!-- Global One-Click Copy Toast Notification -->
+    <div
+      id="copy-toast"
+      class="fixed bottom-6 right-6 z-50 flex items-center gap-3 px-4 py-3 bg-slate-900/95 text-white rounded-2xl shadow-2xl border border-emerald-500/40 backdrop-blur-md transform translate-y-20 opacity-0 pointer-events-none transition-all duration-300 ease-out max-w-sm"
+      role="alert"
+    >
+      <div class="w-8 h-8 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold text-base flex-shrink-0 border border-emerald-500/30">
+        ✓
+      </div>
+      <div>
+        <p class="text-xs font-bold text-white flex items-center gap-1.5">
+          优惠码已成功复制到剪贴板！
+        </p>
+        <p class="text-[11px] text-emerald-300/90 font-mono mt-0.5">
+          结账时输入代码 <span id="copy-toast-code" class="text-amber-300 font-bold underline"></span> 即可立享折上折
+        </p>
+      </div>
+    </div>
+
+    <!-- Client Script: Copy Handler & Lightweight Zero-Cookie Telemetry -->
+    <script>
+      (function() {
+        // 1. Telemetry logging helper (Local storage only, zero cookies)
+        const logEvent = (name: string, payload: Record<string, any> = {}) => {
+          try {
+            const key = 'chatgptzhinan_telemetry';
+            const raw = localStorage.getItem(key);
+            const events = raw ? JSON.parse(raw) : [];
+            events.push({
+              event: name,
+              path: window.location.pathname,
+              ts: new Date().toISOString(),
+              ...payload
+            });
+            // Keep recent 100 events
+            if (events.length > 100) events.splice(0, events.length - 100);
+            localStorage.setItem(key, JSON.stringify(events));
+          } catch (e) {
+            // Silently ignore storage errors (e.g. private mode)
+          }
+        };
+
+        // Log page view
+        logEvent('page_view', { title: document.title });
+
+        // 2. Global Toast elements
+        const toast = document.getElementById('copy-toast');
+        const codeSpan = document.getElementById('copy-toast-code');
+        let toastTimer: any = null;
+
+        const showToast = (code: string) => {
+          if (!toast || !codeSpan) return;
+          codeSpan.textContent = code;
+          toast.classList.remove('translate-y-20', 'opacity-0', 'pointer-events-none');
+          toast.classList.add('translate-y-0', 'opacity-100');
+
+          if (toastTimer) clearTimeout(toastTimer);
+          toastTimer = setTimeout(() => {
+            toast.classList.remove('translate-y-0', 'opacity-100');
+            toast.classList.add('translate-y-20', 'opacity-0', 'pointer-events-none');
+          }, 2600);
+        };
+
+        // 3. Delegated Click Listener for Coupon Copy
+        document.addEventListener('click', (e) => {
+          const target = e.target as HTMLElement | null;
+          if (!target) return;
+
+          // Check if clicked element or its parent has [data-copy-coupon]
+          const couponEl = target.closest('[data-copy-coupon]') as HTMLElement | null;
+          if (couponEl) {
+            const code = couponEl.getAttribute('data-copy-coupon')?.trim() || 'AMM';
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+              navigator.clipboard.writeText(code).catch(() => {});
+            } else {
+              // Fallback
+              const input = document.createElement('input');
+              input.value = code;
+              document.body.appendChild(input);
+              input.select();
+              document.execCommand('copy');
+              document.body.removeChild(input);
+            }
+
+            // Click bounce visual feedback
+            couponEl.style.transform = 'scale(0.96)';
+            setTimeout(() => { couponEl.style.transform = ''; }, 150);
+
+            showToast(code);
+            logEvent('copy_coupon_click', { coupon: code });
+          }
+
+          // Check if clicked element or its parent is a /go/ cloaked affiliate link
+          const link = target.closest('a') as HTMLAnchorElement | null;
+          if (link && link.href) {
+            const match = link.href.match(/\/go\/([a-z0-9\-]+)\/?/);
+            if (match) {
+              const brandSlug = match[1];
+              logEvent('aff_outbound_click', {
+                brand: brandSlug,
+                href: link.href,
+                anchorText: link.textContent?.trim().slice(0, 30)
+              });
+            }
+          }
+        });
+      })();
+    </script>
+  </body>
+</html>

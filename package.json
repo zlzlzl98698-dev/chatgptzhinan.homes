@@ -1,0 +1,23 @@
+{
+  "name": "chatgptzhinan.homes",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "astro dev",
+    "start": "astro dev",
+    "build": "astro build && node -e \"const fs=require('fs'); if(fs.existsSync('dist/sitemap-index.xml')) fs.copyFileSync('dist/sitemap-index.xml', 'dist/sitemap.xml');\" && pagefind --site dist",
+    "preview": "astro preview"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "devDependencies": {
+    "@astrojs/sitemap": "^3.7.6",
+    "@astrojs/tailwind": "^6.0.2",
+    "astro": "^7.4.13",
+    "pagefind": "^1.6.0",
+    "tailwindcss": "^3.4.19"
+  }
+}

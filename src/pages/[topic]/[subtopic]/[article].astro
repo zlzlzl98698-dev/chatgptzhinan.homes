@@ -1,0 +1,275 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { ARTICLES, getArticleBySlug, type TertiaryArticleItem } from '@/data/articles';
+import { TOPICS } from '@/data/topics';
+import { getSubtopicDeepContent } from '@/data/subtopics-depth';
+import { BRANDS } from '@/data/brands';
+import AffiliateDisclaimer from '@/components/brands/AffiliateDisclaimer.astro';
+
+export async function getStaticPaths() {
+  return ARTICLES.map((article) => ({
+    params: {
+      topic: article.topicSlug,
+      subtopic: article.subtopicSlug,
+      article: article.slug
+    },
+    props: { article }
+  }));
+}
+
+export interface Props {
+  article: TertiaryArticleItem;
+}
+
+const { article } = Astro.props;
+
+// Fetch topic and subtopic metadata
+const currentTopic = TOPICS.find(t => t.slug === article.topicSlug);
+const currentSubtopic = currentTopic?.subtopics.find(s => s.slug === article.subtopicSlug);
+
+// Fetch matched brands
+const matchedBrands = article.recommendedBrandSlugs
+  .map(slug => BRANDS.find(b => b.slug === slug))
+  .filter((b): b is any => Boolean(b));
+
+const displayBrands = matchedBrands.length > 0 ? matchedBrands : BRANDS.slice(0, 2);
+
+const breadcrumbs = [
+  { name: '首页', url: '/' },
+  { name: currentTopic?.navTitle || '专题', url: `/${article.topicSlug}/` },
+  { name: currentSubtopic?.title.split('：')[0] || '细分中心', url: `/${article.topicSlug}/${article.subtopicSlug}/` },
+  { name: article.title.split('：')[0], url: `/${article.topicSlug}/${article.subtopicSlug}/${article.slug}/` }
+];
+
+const articleSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'Article',
+  'headline': article.title,
+  'description': article.metaDescription,
+  'datePublished': `${article.lastUpdated}T08:00:00+08:00`,
+  'dateModified': `${article.lastUpdated}T12:00:00+08:00`,
+  'author': {
+    '@type': 'Organization',
+    'name': 'chatgpt指南技术编辑部'
+  },
+  'publisher': {
+    '@type': 'Organization',
+    'name': 'chatgpt指南',
+    'url': 'https://chatgptzhinan.homes'
+  },
+  'mainEntityOfPage': {
+    '@type': 'WebPage',
+    '@id': `https://chatgptzhinan.homes/${article.topicSlug}/${article.subtopicSlug}/${article.slug}/`
+  }
+};
+
+const faqSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  'mainEntity': article.faqs.map(f => ({
+    '@type': 'Question',
+    'name': f.q,
+    'acceptedAnswer': {
+      '@type': 'Answer',
+      'text': f.a
+    }
+  }))
+};
+---
+
+<BaseLayout
+  title={`${article.title} | chatgpt指南`}
+  description={article.metaDescription}
+  canonical={`https://chatgptzhinan.homes/${article.topicSlug}/${article.subtopicSlug}/${article.slug}/`}
+  breadcrumbs={breadcrumbs}
+  schema={articleSchema}
+>
+  <article class="max-w-4xl mx-auto py-8 px-4 sm:px-6 space-y-10">
+
+    <!-- Header Meta Box -->
+    <header class="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 shadow-sm space-y-4">
+      <div class="flex flex-wrap items-center gap-2">
+        <span class="px-3 py-1 rounded-full bg-emerald-50 text-emerald-800 text-xs font-semibold border border-emerald-200">
+          {article.searchIntent === 'troubleshooting' ? '🔧 应急故障排障' : article.searchIntent === 'how-to' ? '📘 保姆级实操教程' : '📊 深度分析与选型'}
+        </span>
+        <span class="text-xs text-slate-400 font-mono">
+          归属：<a href={`/${article.topicSlug}/${article.subtopicSlug}/`} class="text-emerald-700 hover:underline">{currentSubtopic?.title.split('：')[0]}</a>
+        </span>
+        <span class="text-xs text-slate-400 font-mono">· 更新时间：{article.lastUpdated}</span>
+        <span class="text-xs text-slate-400 font-mono">· 字数：~{article.wordCount} 字</span>
+      </div>
+
+      <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900 leading-tight">
+        {article.title}
+      </h1>
+
+      <!-- Direct Answer / Answer-First Callout -->
+      <div class="rounded-2xl bg-emerald-50/80 border border-emerald-200/80 p-5 space-y-2 mt-4">
+        <div class="flex items-center gap-2 text-emerald-800 font-bold text-sm">
+          <span>⚡ 核心答案优先 (Direct Answer)</span>
+        </div>
+        <p class="text-xs sm:text-sm text-slate-700 leading-relaxed font-medium">
+          {article.heroAnswer}
+        </p>
+      </div>
+    </header>
+
+    <!-- Prerequisites & Conditions -->
+    {article.prerequisites && article.prerequisites.length > 0 && (
+      <section class="bg-slate-50 border border-slate-200 rounded-2xl p-5 space-y-2.5">
+        <h2 class="text-xs font-bold text-slate-800 uppercase tracking-wider flex items-center gap-1.5">
+          <span>📋</span> 适用环境、软件版本与前提条件
+        </h2>
+        <ul class="text-xs text-slate-600 space-y-1.5 list-disc pl-5">
+          {article.prerequisites.map((p) => (
+            <li>{p}</li>
+          ))}
+        </ul>
+      </section>
+    )}
+
+    <!-- Core Analytical Sections -->
+    <main class="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 space-y-8 shadow-sm">
+      {article.coreSections.map((sec) => (
+        <section class="space-y-4">
+          <h2 class="text-lg sm:text-xl font-bold text-slate-900 border-b border-slate-100 pb-2">
+            {sec.heading}
+          </h2>
+
+          <div class="space-y-3 text-xs sm:text-sm text-slate-700 leading-relaxed">
+            {sec.paragraphs.map((p) => (
+              <p>{p}</p>
+            ))}
+          </div>
+
+          {sec.codeSnippet && (
+            <div class="rounded-2xl bg-slate-900 text-slate-200 p-4 font-mono text-xs overflow-x-auto border border-slate-800">
+              <pre><code>{sec.codeSnippet}</code></pre>
+            </div>
+          )}
+
+          {sec.callout && (
+            <div class={`rounded-xl p-4 text-xs leading-relaxed border ${sec.callout.type === 'warning' ? 'bg-amber-50 text-amber-900 border-amber-200' : sec.callout.type === 'tip' ? 'bg-emerald-50 text-emerald-900 border-emerald-200' : 'bg-blue-50 text-blue-900 border-blue-200'}`}>
+              <strong>{sec.callout.type === 'warning' ? '⚠️ 注意：' : sec.callout.type === 'tip' ? '💡 实用建议：' : 'ℹ️ 提示：'}</strong>
+              <span>{sec.callout.text}</span>
+            </div>
+          )}
+        </section>
+      ))}
+
+      <!-- Verification Steps -->
+      {article.verificationSteps && article.verificationSteps.length > 0 && (
+        <section class="border-t border-slate-100 pt-6 space-y-3">
+          <h2 class="text-lg font-bold text-slate-900 flex items-center gap-2">
+            <span>✅</span> 操作成效验证与检验标准
+          </h2>
+          <div class="bg-emerald-50/50 border border-emerald-200/60 rounded-2xl p-4 space-y-2">
+            <ul class="text-xs text-slate-700 space-y-1.5 list-disc pl-5">
+              {article.verificationSteps.map((step) => (
+                <li>{step}</li>
+              ))}
+            </ul>
+          </div>
+        </section>
+      )}
+
+      <!-- Common Mistakes -->
+      {article.commonMistakes && article.commonMistakes.length > 0 && (
+        <section class="border-t border-slate-100 pt-6 space-y-3">
+          <h2 class="text-lg font-bold text-slate-900 flex items-center gap-2">
+            <span>⚠️</span> 常见误区与高频踩坑避错指南
+          </h2>
+          <div class="bg-rose-50/50 border border-rose-200/60 rounded-2xl p-4 space-y-2">
+            <ul class="text-xs text-slate-700 space-y-1.5 list-disc pl-5">
+              {article.commonMistakes.map((m) => (
+                <li>{m}</li>
+              ))}
+            </ul>
+          </div>
+        </section>
+      )}
+    </main>
+
+    <!-- Contextual Brand Recommendations (Safe and Transparent) -->
+    <section class="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 space-y-4">
+      <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+        <div>
+          <h2 class="text-base font-bold text-slate-900 flex items-center gap-2">
+            <span>🌐</span> 适合本场景的可靠服务商备选
+          </h2>
+          <p class="text-xs text-slate-500 mt-0.5">
+            若本地多次排查仍存在连接障碍，建议切换至具备企业级 IEPL 专线保障的服务商体验。
+          </p>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        {displayBrands.map((brand: any) => (
+          <div class="border border-slate-200 rounded-2xl p-4 bg-slate-50/60 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+              <div class="relative w-10 h-10 flex-shrink-0">
+                <img src={brand.logo} alt={brand.name} class="w-10 h-10 rounded-xl object-contain bg-white border p-1" onerror="this.style.display='none'; if(this.nextElementSibling) this.nextElementSibling.style.display='flex';" />
+                <div class="hidden w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 text-white font-bold text-sm items-center justify-center border border-emerald-400 select-none">
+                  {brand.name.slice(0, 1)}
+                </div>
+              </div>
+              <div>
+                <div class="font-bold text-slate-900 text-sm flex items-center gap-1.5">
+                  {brand.name}
+                  {brand.coupon && <span class="text-[10px] bg-amber-100 text-amber-800 px-1 rounded font-mono">券: {brand.coupon}</span>}
+                </div>
+                <div class="text-[11px] text-slate-500 font-mono">{brand.lineType} · {brand.entryPrice}</div>
+              </div>
+            </div>
+            <div class="flex items-center gap-2">
+              <a
+                href={`/reviews/${brand.slug}/`}
+                class="px-2.5 py-1.5 rounded-lg border border-slate-300 text-slate-600 text-xs hover:bg-white transition-colors"
+              >
+                评测
+              </a>
+              <a
+                href={`/go/${brand.slug}/`}
+                target="_blank"
+                rel="nofollow sponsored noopener"
+                class="px-3 py-1.5 rounded-lg bg-emerald-600 text-white text-xs font-semibold hover:bg-emerald-700 transition-colors"
+              >
+                官网
+              </a>
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <!-- Structured FAQs -->
+    {article.faqs && article.faqs.length > 0 && (
+      <section class="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 space-y-4">
+        <h2 class="text-base font-bold text-slate-900 flex items-center gap-2">
+          <span>❓</span> 常见延伸疑问与答疑
+        </h2>
+        <div class="space-y-3">
+          {article.faqs.map((f) => (
+            <div class="border border-slate-100 rounded-xl p-4 bg-slate-50/50 space-y-1">
+              <h3 class="font-bold text-slate-900 text-xs sm:text-sm">{f.q}</h3>
+              <p class="text-xs text-slate-600 leading-relaxed">{f.a}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+    )}
+
+    <!-- Navigation Footer -->
+    <div class="flex items-center justify-between text-xs text-slate-500 pt-4 border-t border-slate-200">
+      <a href={`/${article.topicSlug}/${article.subtopicSlug}/`} class="text-emerald-700 font-semibold hover:underline">
+        &larr; 返回【{currentSubtopic?.title.split('：')[0]}】细分专题中心
+      </a>
+      <a href={`/${article.topicSlug}/`} class="hover:text-emerald-600 transition-colors">
+        进入【{currentTopic?.navTitle}】主专题 &rarr;
+      </a>
+    </div>
+
+    <AffiliateDisclaimer />
+
+  </article>
+</BaseLayout>

@@ -1,0 +1,349 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { BRANDS, MAIN_PUSH_BRAND } from '@/data/brands';
+import { getTopicBySlug } from '@/data/topics';
+import AffiliateDisclaimer from '@/components/brands/AffiliateDisclaimer.astro';
+
+const topic = getTopicBySlug('troubleshooting')!;
+
+const breadcrumbs = [
+  { name: '首页', url: '/' },
+  { name: '故障排查', url: '/troubleshooting/' }
+];
+
+const faqs = [
+  { q: '为什么节点全部显示 9999ms 或 Timeout 超时？', a: '最常见的元凶是「系统时间不同步」。现代加密协议（VLESS / Trojan / Shadowsocks）为了杜绝中间人重放攻击，强制要求设备与服务端的时间误差必须在 60 秒以内。只要在 Windows 或手机设置中点击「立即同步时间」，90% 的节点全红超时即可瞬间恢复。第二常见原因是套餐流量已耗尽或订阅已到期。' },
+  { q: '关掉代理软件后，电脑连百度、微信等所有国内网站都打不开了，怎么解决？', a: '这是因为软件异常关闭（如直接任务管理器强退或死机），导致客户端未能将修改过的「Windows 系统代理」自动关闭。解决办法：打开 Windows「设置 → 网络和 Internet → 代理」，在「手动设置代理」下方将「使用代理服务器」拨动开关手动关闭，国内网络即可秒级恢复正常。' },
+  { q: '提示「Subscription download timed out」订阅更新失败怎么办？', a: '说明你当前本地宽带的 DNS 无法解析或直接阻断了机场的订阅域名。排查与解决方法：① 手机开启 5G 移动热点连接后再次尝试点击更新；② 若客户端中尚有能用的旧节点，可先开启旧节点代理再点击更新；③ 登录机场用户中心查看是否发布了紧急备用订阅分流域名。' },
+  { q: '为什么显示连接成功，但打开 Google 提示 ERR_CONNECTION_RESET？', a: '此报错通常由两方面引起：① 你的客户端可能误开了「直连模式（Direct）」导致请求直接撞上 GFW；② 若处于「规则模式」，说明你访问的网站未被内置规则库收录，可临时切换为「全局模式（Global）」；③ 检查节点是否因敏感期被阻断，尝试在列表中更换另一个地区节点。' },
+  { q: '访问 ChatGPT 提示「Unable to load site」或「Error 1020: Access Denied」怎么解决？', a: '这是 OpenAI 触发了高危反爬虫风控。解决三板斧：① 严禁使用香港节点（香港不属于受支持地区），切换为纯净的美国原生住宅节点；② 开启浏览器「无痕/隐身模式」（杜绝旧 Cookie 指纹与地理位置缓存）；③ 检查浏览器是否开启了 WebRTC 真实 IP 暴露。' },
+  { q: '打开客户端提示「Port 7890 already in use」端口被占用怎么办？', a: '说明后台已经有一个隐藏的代理内核进程（如之前的 Clash 或 v2rayN 僵尸进程）正在霸占 7890 端口。按 Ctrl+Shift+Esc 打开任务管理器，在进程列表中找到并强制结束所有包含「Clash」、「Mihomo」或「v2ray」的进程，重新启动客户端即可。' },
+  { q: '光速云等高品质专线在遇到突发故障时如何应急处理？', a: '光速云后台针对每个节点配备了智能冗余容灾。若某个单一节点维护，可在客户端右键「更新订阅」拉取最新的故障自愈节点列表，或在客户端中将策略组设为「自动选择（Fallback / URL-Test）」，系统会在 3 秒内将流量无感漂移至备用专线通道。' },
+  { q: '手机端为什么锁屏几分钟后梯子就断连，打开软件才恢复？', a: '这是由于国内安卓厂商（小米、华为、OPPO、vivo）激进的后台电池优化策略杀死了代理进程。必须在手机「设置 → 应用管理」中找到代理软件，将后台耗电策略从“智能推荐”修改为「无限制 / 允许后台高耗电运行」，并锁定最近任务卡片。' }
+];
+
+const schema = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'CollectionPage',
+    'name': '网络代理终极故障诊断中心：快速解决连接不上、超时与 DNS 错误',
+    'description': topic.description,
+    'url': 'https://chatgptzhinan.homes/troubleshooting/'
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    'mainEntity': faqs.map(f => ({
+      '@type': 'Question',
+      'name': f.q,
+      'acceptedAnswer': {
+        '@type': 'Answer',
+        'text': f.a
+      }
+    }))
+  }
+];
+---
+
+<BaseLayout
+  title="网络故障诊断中心｜节点超时9999ms、订阅更新失败、连上无网终极排查手册"
+  description="标准化六步故障诊断树：快速解决科学上网常见 Bug。系统时间偏差、系统代理残留导致断网、DNS 污染、端口冲突及 ChatGPT 1020 报错一键秒修指南。"
+  canonical="https://chatgptzhinan.homes/troubleshooting/"
+  breadcrumbs={breadcrumbs}
+  schema={schema}
+>
+
+  <article class="max-w-4xl mx-auto py-6 space-y-10">
+    
+    <!-- Hero Header -->
+    <header class="space-y-4">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-red-50 text-red-700 border border-red-200 text-xs font-semibold">
+        <span>🛠️ 故障秒修急救手册</span>
+        <span>·</span>
+        <span>Pillar Page 网络排障中心</span>
+      </div>
+
+      <h1 class="text-3xl sm:text-5xl font-extrabold text-slate-900 tracking-tight leading-tight">
+        网络代理故障终极排查：<br class="hidden sm:inline" />
+        <span class="bg-gradient-to-r from-red-600 via-amber-600 to-rose-600 bg-clip-text text-transparent">告别 9999ms 超时、订阅抓取失败与无网报错</span>
+      </h1>
+
+      <!-- Answer-First Box -->
+      <div class="rounded-2xl bg-gradient-to-r from-red-50 via-amber-50 to-rose-50 border border-red-200 p-6 shadow-sm my-6 space-y-3">
+        <div class="flex items-center gap-2 text-red-900 font-bold text-sm">
+          <span>⚡ 核心故障排查结论先行（Troubleshooting First Aid）</span>
+        </div>
+        <p class="text-sm sm:text-base text-slate-800 leading-relaxed font-medium">
+          <strong>90% 的连不上或超时可在 60 秒内通过「黄金排障三定律」自愈：</strong><br />
+          ① <strong>系统时间校准：</strong> 设备时间误差超 60 秒会导致加密 TLS 握手彻底失败，立刻点击系统「自动同步时间」；<br />
+          ② <strong>关机后断网自愈：</strong> 关掉梯子后国内网页全打不开？前往系统设置手动关闭<strong>「使用代理服务器」</strong>开关；<br />
+          ③ <strong>订阅更新失败：</strong> 切换为手机 5G 热点重新点击「更新订阅」，或者先开启旧节点代理再拉取配置。
+        </p>
+        <div class="pt-3 border-t border-red-200/60 flex flex-wrap items-center justify-between gap-2 text-xs text-red-800">
+          <span>排障标准：六步标准化诊断树（Symptom &rarr; Root Cause &rarr; Solution &rarr; Verification）</span>
+          <span>更新时间：2026 年 11 月 21 日</span>
+        </div>
+      </div>
+
+      <!-- Jump Navigation -->
+      <nav class="bg-white border border-slate-200 rounded-2xl p-4 sm:p-5 shadow-xs">
+        <div class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">章节导航 · 快速定位故障现象</div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 text-xs">
+          <a href="#diagnostic-tree" class="text-slate-700 hover:text-red-600 py-1">一、标准化快速故障自检树 &rarr;</a>
+          <a href="#node-timeout-fix" class="text-slate-700 hover:text-red-600 py-1">二、节点全部 9999ms / 超时秒修方案 &rarr;</a>
+          <a href="#no-internet-after-close" class="text-slate-700 hover:text-red-600 py-1">三、关闭代理后电脑连不上国内网解决 &rarr;</a>
+          <a href="#sub-fetch-error" class="text-slate-700 hover:text-red-600 py-1">四、订阅链接抓取失败与更新报错 &rarr;</a>
+          <a href="#port-conflict-crash" class="text-slate-700 hover:text-red-600 py-1">五、7890 端口冲突与软件闪退排查 &rarr;</a>
+          <a href="#ai-streaming-block" class="text-slate-700 hover:text-red-600 py-1">六、ChatGPT / 流媒体访问报错深度攻坚 &rarr;</a>
+          <a href="#troubleshooting-subtopics" class="text-slate-700 hover:text-red-600 py-1">七、故障排查 8 大二级细分知识中心 &rarr;</a>
+          <a href="#troubleshooting-faq" class="text-slate-700 hover:text-red-600 py-1">八、故障自修高频常见问答（FAQ） &rarr;</a>
+        </div>
+      </nav>
+    </header>
+
+    <!-- Section 1: Standard Diagnostic Tree -->
+    <section id="diagnostic-tree" class="space-y-4 pt-4">
+      <h2 class="text-2xl font-bold text-slate-900 tracking-tight">
+        一、网络代理标准化快速故障诊断树
+      </h2>
+      <p class="text-xs sm:text-sm text-slate-600 leading-relaxed">
+        面对复杂的网络问题，切忌盲目胡乱重装软件。按照以下逻辑树层层收敛范围，精准锁定问题根因：
+      </p>
+
+      <div class="p-5 rounded-2xl bg-slate-950 text-slate-100 font-mono text-xs space-y-4 border border-slate-800 shadow-xl overflow-x-auto">
+        <div class="text-amber-400 font-bold text-sm border-b border-slate-800 pb-2">
+          🌲 快速定位根因决策流（Root-Cause Decision Flowchart）
+        </div>
+        <div class="space-y-3 leading-relaxed">
+          <div class="flex items-start gap-2">
+            <span class="text-emerald-400 font-bold">[阶段 1]</span>
+            <div><strong>检测本地系统环境：</strong> 本地时间是否精准到秒？&rarr; 否 &rarr; <span class="text-amber-300">同步 Windows 时间</span>；是 &rarr; 进入阶段 2。</div>
+          </div>
+          <div class="flex items-start gap-2">
+            <span class="text-blue-400 font-bold">[阶段 2]</span>
+            <div><strong>检测账户状态：</strong> 登录机场后台，已用流量是否超限？套餐是否到期？&rarr; 是 &rarr; <span class="text-amber-300">充值/续费套餐</span>；否 &rarr; 进入阶段 3。</div>
+          </div>
+          <div class="flex items-start gap-2">
+            <span class="text-purple-400 font-bold">[阶段 3]</span>
+            <div><strong>检测节点握手状态：</strong> 测速全部显示 Timeout？&rarr; 是 &rarr; <span class="text-amber-300">本地杀毒软件/防火墙拦截，关闭360并更新订阅</span>；否 &rarr; 进入阶段 4。</div>
+          </div>
+          <div class="flex items-start gap-2">
+            <span class="text-cyan-400 font-bold">[阶段 4]</span>
+            <div><strong>检测流量接管：</strong> 节点通畅但打开 Google 报错？&rarr; 检查是否未勾选「系统代理」或误开了「直连模式」。</div>
+          </div>
+          <div class="flex items-start gap-2">
+            <span class="text-rose-400 font-bold">[阶段 5]</span>
+            <div><strong>检测目标业务限制：</strong> 仅 ChatGPT/Claude 报错 1020？&rarr; <span class="text-amber-300">更换美国/日本原生住宅节点，使用隐身窗口清理 Cookies</span>。</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 2: Node Timeout Deep Dive -->
+    <section id="node-timeout-fix" class="space-y-4 pt-6 border-t border-slate-200 prose prose-slate max-w-none text-xs sm:text-sm text-slate-700 leading-relaxed">
+      <h2 class="text-2xl font-bold text-slate-900 tracking-tight not-prose">
+        二、节点全部 9999ms / Timeout 超时秒修指南
+      </h2>
+      <p>
+        当你点击客户端测速时，如果<strong>整个列表所有节点瞬间全红、全部显示 Timeout 或 9999ms</strong>，这绝对不是节点坏了，而是本地通信链路被硬性切断。
+      </p>
+
+      <div class="not-prose grid grid-cols-1 md:grid-cols-3 gap-4 my-4">
+        <div class="p-4 rounded-xl bg-white border border-slate-200 space-y-2">
+          <div class="font-bold text-slate-900 text-sm text-red-600">原因 1：系统时间未同步（占比 70%）</div>
+          <p class="text-xs text-slate-600 leading-relaxed">
+            TLS 加密握手协议强制防范重放攻击。如果你的 Windows 电脑时间比标准网络时间快或慢了 60 秒以上，服务端会直接把你的加密握手包当作非法黑客攻击无情丢弃！
+          </p>
+          <div class="text-[11px] bg-slate-50 p-2 rounded text-slate-700">
+            <strong>解决：</strong> 打开系统「时间和语言」&rarr; 点击「立即同步」。
+          </div>
+        </div>
+
+        <div class="p-4 rounded-xl bg-white border border-slate-200 space-y-2">
+          <div class="font-bold text-slate-900 text-sm text-amber-600">原因 2：套餐超额或已被停机（占比 20%）</div>
+          <p class="text-xs text-slate-600 leading-relaxed">
+            很多用户不知不觉看 4K 跑光了流量，或者上个月的账单未续费。此时机场接入网关会自动切断后端转发权限，表现出来的现象也是测速全红超时。
+          </p>
+          <div class="text-[11px] bg-slate-50 p-2 rounded text-slate-700">
+            <strong>解决：</strong> 登录机场官网后台查看剩余流量与有效日期。
+          </div>
+        </div>
+
+        <div class="p-4 rounded-xl bg-white border border-slate-200 space-y-2">
+          <div class="font-bold text-slate-900 text-sm text-blue-600">原因 3：杀毒软件拦截底层网卡（占比 10%）</div>
+          <p class="text-xs text-slate-600 leading-relaxed">
+            360 安全卫士、火绒或某些企业管家会拦截开源代理工具的本地回环接口（127.0.0.1）以及 TUN 虚拟适配器驱动，导致数据包根本发不出去。
+          </p>
+          <div class="text-[11px] bg-slate-50 p-2 rounded text-slate-700">
+            <strong>解决：</strong> 将客户端目录添加到杀毒软件白名单信任区。
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 3: No Internet After Closing Proxy -->
+    <section id="no-internet-after-close" class="space-y-4 pt-6 border-t border-slate-200 prose prose-slate max-w-none text-xs sm:text-sm text-slate-700 leading-relaxed">
+      <h2 class="text-2xl font-bold text-slate-900 tracking-tight not-prose">
+        三、关闭代理后连不上国内网络（微信、百度打不开）根治
+      </h2>
+      <p>
+        <strong>为什么会发生「关梯子即断网」？</strong><br />
+        当你在 Clash 等软件中开启「系统代理」时，软件会向 Windows 注册表写入一条规则：<code>强制将所有浏览器的 HTTP 流量发送至 127.0.0.1:7890 端口由我处理</code>。
+        如果你在关闭电脑前直接点击了任务栏右键强退、或者电脑意外断电、死机蓝屏，软件根本来不及向操作系统发出“注销代理”的指令。此时你关闭了软件，7890 端口没有程序监听了，但 Windows 依然固执地将所有流量送往 7890，导致整台电脑彻底无法上网！
+      </p>
+
+      <div class="not-prose p-5 rounded-2xl bg-white border-2 border-amber-300 shadow-sm space-y-3 my-4">
+        <div class="font-bold text-slate-900 text-sm flex items-center gap-2">
+          <span>⚡ 10 秒钟快速自救步骤（Windows 10/11）：</span>
+        </div>
+        <ol class="list-decimal list-inside space-y-1.5 text-xs text-slate-700 leading-relaxed">
+          <li>按下键盘 <code>Win + i</code> 快捷键打开 Windows 设置。</li>
+          <li>点击左侧菜单中的 <strong>「网络和 Internet」</strong>，随后点击右侧的 <strong>「代理」</strong> 选项。</li>
+          <li>找到 <strong>「手动设置代理（Manual proxy setup）」</strong> 区域。</li>
+          <li>将 <strong>「使用代理服务器（Use a proxy server）」</strong> 拨动开关手动切换为 <strong>「关闭（Off）」</strong>！</li>
+          <li>重新刷新浏览器，百度和微信即刻满血复活！</li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- Section 4: Sub Fetch & Port Conflict -->
+    <section id="sub-fetch-error" class="space-y-4 pt-6 border-t border-slate-200 prose prose-slate max-w-none text-xs sm:text-sm text-slate-700 leading-relaxed">
+      <h2 class="text-2xl font-bold text-slate-900 tracking-tight not-prose">
+        四、订阅更新报错与 7890 端口冲突排查
+      </h2>
+      <p>
+        <strong>1. 订阅更新失败（Subscription download failed）：</strong><br />
+        机场官方的订阅转换服务器域名有时会遭遇本地运营商 DNS 污染。最有效的避坑办法是：先开启手机 4G/5G 热点共享给电脑，借用纯净的蜂窝网络点击更新订阅，更新完成后再连回家庭宽带；或者在机场用户中心下载 <code>.yaml</code> 本地文件，在 Clash 中直接离线导入。
+      </p>
+
+      <h3 id="port-conflict-crash" class="text-lg font-bold text-slate-900 not-prose mt-6">
+        五、端口冲突（Port 7890 is already occupied）
+      </h3>
+      <p>
+        当启动软件提示端口占用时，绝大部分原因是上次退出的软件内核其实还在后台僵尸运行。在 PowerShell 中运行以下一行代码即可直接定位霸占端口的进程 PID 并杀除：
+      </p>
+
+      <div class="not-prose p-4 rounded-xl bg-slate-900 text-emerald-400 font-mono text-xs my-4 space-y-1">
+        <div class="text-slate-400"># 查看霸占 7890 端口的进程 PID：</div>
+        <div>netstat -ano | findstr :7890</div>
+        <div class="text-slate-400 pt-2"># 根据查出的 PID 强制结束进程（例如 PID 为 1234）：</div>
+        <div>taskkill /F /PID 1234</div>
+      </div>
+    </section>
+
+    <!-- Section 6: AI / Streaming Block -->
+    <section id="ai-streaming-block" class="space-y-4 pt-6 border-t border-slate-200 prose prose-slate max-w-none text-xs sm:text-sm text-slate-700 leading-relaxed">
+      <h2 class="text-2xl font-bold text-slate-900 tracking-tight not-prose">
+        六、ChatGPT 与海外流媒体访问报错深度攻坚
+      </h2>
+      <p>
+        如果你其他外网都能打开，唯独 ChatGPT 提示 <code>Access Denied (Error 1020)</code> 或 Netflix 提示 <code>您似乎在使用代理</code>，按以下标准清单排查：
+      </p>
+      <ul>
+        <li><strong>立即避开香港节点：</strong> OpenAI 明确不支持香港机房，所有 HK 节点必报 1020。访问 ChatGPT 必须切换为<strong>美国（US）或日本（JP）</strong>节点。</li>
+        <li><strong>浏览器指纹与缓存污染：</strong> 如果你曾用香港节点打开过 ChatGPT，浏览器 LocalStorage 已经记录了你的被拒指纹。必须打开<strong>隐身窗口（Incognito）</strong>，或者在设置中清除 chatgpt.com 的全部站点数据。</li>
+        <li><strong>WebRTC 泄露检测：</strong> 打开 <code>browserleaks.com/webrtc</code>。若页面中显示了你本地真实的中国大陆局域网或公网 IP，在浏览器安装 WebRTC Control 插件一键禁用。</li>
+      </ul>
+    </section>
+
+    <!-- Section 7: 8 Subtopics Navigation -->
+    <section id="troubleshooting-subtopics" class="space-y-4 pt-6 border-t border-slate-200">
+      <div class="flex items-center justify-between">
+        <h2 class="text-2xl font-bold text-slate-900 tracking-tight">
+          七、故障排查 8 大二级细分知识中心
+        </h2>
+        <span class="text-xs text-slate-500 font-mono">8 个专项故障深入排查</span>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        {topic.subtopics.map((sub) => (
+          <a
+            href={`/troubleshooting/${sub.slug}/`}
+            class="group block p-4 rounded-xl border border-slate-200 bg-white hover:border-red-500 hover:shadow-md transition-all space-y-2"
+          >
+            <div class="flex items-center justify-between">
+              <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-red-50 text-red-700 font-mono">
+                /{sub.slug}/
+              </span>
+              <span class="text-xs text-slate-400 group-hover:text-red-600 transition-colors">&rarr;</span>
+            </div>
+            <h3 class="text-xs sm:text-sm font-bold text-slate-900 group-hover:text-red-600 transition-colors line-clamp-1">
+              {sub.title.split('：')[0]}
+            </h3>
+            <p class="text-xs text-slate-500 line-clamp-2 leading-relaxed">
+              {sub.heroAnswer}
+            </p>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <!-- Commercial CTA: Guangsu Cloud -->
+    <section class="rounded-2xl bg-gradient-to-br from-slate-900 via-zinc-900 to-neutral-900 text-white p-6 sm:p-8 shadow-xl space-y-4 border border-slate-800">
+      <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div class="space-y-1">
+          <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 text-xs font-semibold">
+            <span>🛡️ SLA 99.9% 稳定自愈保障</span>
+          </div>
+          <h3 class="text-xl sm:text-2xl font-bold tracking-tight">
+            厌倦了天天排障修节点？试试省心的高可靠专线：光速云
+          </h3>
+          <p class="text-xs sm:text-sm text-slate-300 max-w-2xl leading-relaxed">
+            频繁超时折磨人，核心是小作坊节点没有冗余机制。光速云全链路 BGP 专线具备多入口自动容灾倒换，节点故障率极低，为你节省大量折腾时间。
+          </p>
+        </div>
+        <div class="flex-shrink-0 flex flex-col gap-2 w-full sm:w-auto">
+          <a
+            href={`/go/${MAIN_PUSH_BRAND.slug}/`}
+            target="_blank"
+            rel="nofollow sponsored noopener"
+            class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white font-bold text-center text-xs sm:text-sm shadow-md transition-all whitespace-nowrap"
+          >
+            开启高稳定网络体验 &rarr;
+          </a>
+          <span
+            class="text-[11px] text-slate-300 text-center font-mono cursor-pointer hover:text-white transition-colors select-none"
+            data-copy-coupon={MAIN_PUSH_BRAND.coupon || 'AMM'}
+            title="点击复制优惠码"
+          >
+            专属特惠折扣码：<span class="text-amber-400 font-bold bg-slate-800/80 px-1.5 py-0.5 rounded border border-amber-400/40">{MAIN_PUSH_BRAND.coupon}</span> 📋
+          </span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 8: FAQ Accordion -->
+    <section id="troubleshooting-faq" class="space-y-4 pt-6 border-t border-slate-200">
+      <div class="space-y-1">
+        <h2 class="text-2xl font-bold text-slate-900 tracking-tight">
+          八、网络故障排查高频问答（FAQ）
+        </h2>
+        <p class="text-xs sm:text-sm text-slate-500">
+          根据一线技术支持统计的高频报错，提供可直接操作的诊断答案。
+        </p>
+      </div>
+
+      <div class="space-y-3">
+        {faqs.map((f, i) => (
+          <details class="group bg-white border border-slate-200 rounded-xl p-4 transition-all">
+            <summary class="flex items-center justify-between font-bold text-slate-900 cursor-pointer list-none text-xs sm:text-sm">
+              <span class="flex items-center gap-2">
+                <span class="text-red-600 font-mono">Q{i + 1}.</span>
+                <span>{f.q}</span>
+              </span>
+              <span class="text-slate-400 group-open:rotate-180 transition-transform ml-2">▼</span>
+            </summary>
+            <div class="mt-3 text-xs sm:text-sm text-slate-600 leading-relaxed pl-6 border-l-2 border-red-500">
+              {f.a}
+            </div>
+          </details>
+        ))}
+      </div>
+    </section>
+
+    <!-- Bottom Disclaimer -->
+    <AffiliateDisclaimer />
+
+  </article>
+
+</BaseLayout>

@@ -1,0 +1,259 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { TOPICS } from '@/data/topics';
+import { BRANDS, MAIN_PUSH_BRAND } from '@/data/brands';
+import { CLIENTS } from '@/data/clients';
+import BrandCard from '@/components/brands/BrandCard.astro';
+import PerformanceReport from '@/components/charts/PerformanceReport.astro';
+import AvailabilityMatrix from '@/components/charts/AvailabilityMatrix.astro';
+import NetworkTopology from '@/components/charts/NetworkTopology.astro';
+import ServiceSnapshot from '@/components/charts/ServiceSnapshot.astro';
+import AffiliateDisclaimer from '@/components/brands/AffiliateDisclaimer.astro';
+
+const topBrands = BRANDS.slice(0, 6);
+const featuredClients = CLIENTS.filter(c => c.isRecommended).slice(0, 4);
+
+const homeSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'WebPage',
+  'name': 'chatgpt指南 - 中文网络工具、机场品牌评测与客户端教程权威体系',
+  'description': '面向中文用户提供 ChatGPT、Claude、Gemini、外网访问、VPN 与机场代理节点评测、客户端下载教程与商业开通指引。',
+  'url': 'https://chatgptzhinan.homes/'
+};
+---
+
+<BaseLayout
+  title="chatgpt指南｜ChatGPT网络配置、机场推荐与客户端全家桶使用教程"
+  description="面向中文用户提供 ChatGPT、Claude、Gemini 使用指南、海外网络工具推荐、31家机场品牌客观评测、套餐价格对比与客户端下载配置手册。"
+  canonical="https://chatgptzhinan.homes/"
+  schema={homeSchema}
+>
+
+  <!-- Hero Section -->
+  <section class="py-12 md:py-16 text-center max-w-4xl mx-auto space-y-6">
+    <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs font-semibold">
+      <span>🚀 2026 最新网络知识矩阵</span>
+      <span class="text-emerald-400">|</span>
+      <span>涵盖 31 家主流品牌 · 80 个深度专题</span>
+    </div>
+
+    <h1 class="text-3xl sm:text-5xl font-extrabold text-slate-900 tracking-tight leading-tight">
+      让 ChatGPT 与海外网络工具<br class="hidden sm:inline" />
+      <span class="bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">更稳定、更简单、更低成本</span>
+    </h1>
+
+    <p class="text-base sm:text-lg text-slate-600 max-w-2xl mx-auto leading-relaxed">
+      从入门教程、节点排错、客户端配置，到 31 家机场品牌深度评测与套餐价格对比，为你构建全链路的中文技术指南与决策支持。
+    </p>
+
+    <!-- Search Box Trigger -->
+    <div class="max-w-xl mx-auto pt-2">
+      <a
+        href="/search/"
+        class="flex items-center justify-between w-full px-5 py-3.5 bg-white border border-slate-200 rounded-2xl shadow-sm hover:border-emerald-500 hover:ring-2 hover:ring-emerald-500/20 transition-all text-slate-400 text-sm group"
+      >
+        <div class="flex items-center gap-3">
+          <svg class="w-5 h-5 text-slate-400 group-hover:text-emerald-600 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+          </svg>
+          <span>搜索教程、品牌、报错排查或客户端...</span>
+        </div>
+        <kbd class="hidden sm:inline-block px-2 py-0.5 text-[10px] font-mono text-slate-400 bg-slate-100 rounded border border-slate-200">
+          Pagefind 搜索
+        </kbd>
+      </a>
+    </div>
+
+    <!-- Quick Entry Pills -->
+    <div class="flex flex-wrap items-center justify-center gap-2 pt-2 text-xs">
+      <span class="text-slate-400">热门搜索：</span>
+      <a href="/ai-streaming/chatgpt-airport/" class="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-emerald-50 hover:text-emerald-700 text-slate-600 transition-colors">ChatGPT节点</a>
+      <a href="/clients/clash-verge-rev/" class="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-emerald-50 hover:text-emerald-700 text-slate-600 transition-colors">Clash Verge Rev</a>
+      <a href="/brands/guangsu/" class="px-2.5 py-1 rounded-lg bg-emerald-100/70 text-emerald-800 font-semibold hover:bg-emerald-200 transition-colors">光速云评测</a>
+      <a href="/pricing/cheap/" class="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-emerald-50 hover:text-emerald-700 text-slate-600 transition-colors">便宜机场</a>
+      <a href="/troubleshooting/node-timeout/" class="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-emerald-50 hover:text-emerald-700 text-slate-600 transition-colors">节点超时秒修</a>
+    </div>
+  </section>
+
+  <!-- 10 Primary Topic Cards Grid -->
+  <section class="py-10 border-t border-slate-200">
+    <div class="flex flex-col sm:flex-row sm:items-end justify-between mb-8 gap-4">
+      <div>
+        <h2 class="text-2xl font-bold text-slate-900 tracking-tight">
+          📚 十大核心专题分类
+        </h2>
+        <p class="text-xs sm:text-sm text-slate-500 mt-1">
+          覆盖从网络协议到商业决策的完整知识图谱，每个一级专题均承载 8 个专业细分主题中心。
+        </p>
+      </div>
+      <a href="/brands/" class="text-xs font-semibold text-emerald-600 hover:underline">
+        浏览 31 家品牌数据库 &rarr;
+      </a>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+      {TOPICS.map((topic, idx) => (
+        <a
+          href={`/${topic.slug}/`}
+          class="group rounded-2xl bg-white border border-slate-200 hover:border-emerald-500 hover:shadow-md transition-all p-5 flex flex-col justify-between"
+        >
+          <div>
+            <div class="flex items-center justify-between mb-3">
+              <span class="text-xs font-mono font-bold text-slate-400 group-hover:text-emerald-600 transition-colors">
+                0{idx + 1}
+              </span>
+              <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 group-hover:bg-emerald-50 group-hover:text-emerald-700 transition-colors">
+                {topic.badge}
+              </span>
+            </div>
+            <h3 class="font-bold text-slate-900 text-base mb-2 group-hover:text-emerald-600 transition-colors">
+              {topic.navTitle}
+            </h3>
+            <p class="text-xs text-slate-500 leading-relaxed line-clamp-3 mb-4">
+              {topic.description}
+            </p>
+          </div>
+          <div class="pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-medium text-slate-400 group-hover:text-emerald-600">
+            <span>{topic.subtopics.length} 个细分子专题</span>
+            <span>&rarr;</span>
+          </div>
+        </a>
+      ))}
+    </div>
+  </section>
+
+  <!-- Featured Spotlight: 第一主推 光速云 -->
+  <section class="my-12 rounded-3xl bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 text-white p-6 sm:p-10 border border-slate-800 shadow-2xl relative overflow-hidden">
+    <div class="absolute -right-16 -bottom-16 w-80 h-80 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none"></div>
+
+    <div class="max-w-3xl space-y-4 mb-8">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-xs font-semibold">
+        <span>⭐ 本站第一主推品牌</span>
+        <span>·</span>
+        <span>2020 年运营老牌旗舰</span>
+      </div>
+      <h2 class="text-2xl sm:text-4xl font-extrabold tracking-tight text-white leading-tight">
+        光速云：IEPL + 企业专线双架构<br />
+        <span class="text-emerald-400">晚高峰不拥堵，原生解锁 ChatGPT & 4K 追剧</span>
+      </h2>
+      <p class="text-sm text-slate-300 leading-relaxed">
+        经过 2026 深度测试，光速云覆盖香港、台湾、日本、新加坡、美国等全球核心枢纽，提供 VLESS 高速协议与自研全平台客户端。支持 7 档完整套餐，从 99元/年轻量版到按需独立定制一应俱全。
+      </p>
+    </div>
+
+    <!-- Guangsu Architecture & Metrics Snapshot -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 my-6">
+      <ServiceSnapshot brand={MAIN_PUSH_BRAND} />
+      <PerformanceReport
+        brandName="光速云"
+        speedTests={MAIN_PUSH_BRAND.speedTests}
+        testDate="2026-10-19"
+        averagePing="62ms"
+        maxDownload="529 Mbps"
+      />
+    </div>
+
+    <div class="flex flex-col sm:flex-row items-center justify-between gap-4 pt-6 border-t border-slate-800">
+      <div
+        class="flex items-center gap-3 text-xs text-slate-400 bg-slate-800/80 hover:bg-slate-800 border border-slate-700/80 px-3 py-1.5 rounded-xl cursor-pointer select-none transition-colors"
+        data-copy-coupon={MAIN_PUSH_BRAND.coupon || 'AMM'}
+        title="点击一键复制专属立减优惠码"
+      >
+        <span class="text-emerald-400 font-bold">专属立减优惠码:</span>
+        <code class="px-2 py-0.5 rounded bg-slate-900 text-amber-300 font-mono font-bold border border-slate-700">{MAIN_PUSH_BRAND.coupon || 'AMM'}</code>
+        <span class="text-[11px] text-emerald-400 bg-emerald-950/60 px-1.5 py-0.5 rounded border border-emerald-800/40">📋 复制</span>
+      </div>
+      <div class="flex items-center gap-3 w-full sm:w-auto">
+        <a
+          href="/brands/guangsu/"
+          class="flex-1 sm:flex-none text-center px-5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-white text-xs font-semibold transition-colors"
+        >
+          查看万字深度评测报告
+        </a>
+        <a
+          href={`/go/${MAIN_PUSH_BRAND.slug}/`}
+          target="_blank"
+          rel="nofollow sponsored noopener"
+          class="flex-1 sm:flex-none text-center px-6 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-bold text-xs shadow-lg shadow-emerald-500/20 transition-all"
+        >
+          前往光速云官网开通 &rarr;
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Popular Brands Roster -->
+  <section class="py-10">
+    <div class="flex flex-col sm:flex-row sm:items-end justify-between mb-8 gap-4">
+      <div>
+        <h2 class="text-2xl font-bold text-slate-900 tracking-tight">
+          ⚡ 重点评测机场展示
+        </h2>
+        <p class="text-xs sm:text-sm text-slate-500 mt-1">
+          严选 31 家具有代表性的专线与综合型机场，客观列明套餐价格、测速跑分与优缺点。
+        </p>
+      </div>
+      <a href="/brands/" class="text-xs font-semibold text-emerald-600 hover:underline">
+        查看全部 31 家品牌卡片 &rarr;
+      </a>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {topBrands.map((brand) => (
+        <BrandCard brand={brand} />
+      ))}
+    </div>
+  </section>
+
+  <!-- Client Software Section -->
+  <section class="py-10 border-t border-slate-200">
+    <div class="flex flex-col sm:flex-row sm:items-end justify-between mb-8 gap-4">
+      <div>
+        <h2 class="text-2xl font-bold text-slate-900 tracking-tight">
+          💻 客户端下载与使用教程
+        </h2>
+        <p class="text-xs sm:text-sm text-slate-500 mt-1">
+          Windows、macOS、iOS、Android 与软路由主流客户端官方安全获取与配置说明。
+        </p>
+      </div>
+      <a href="/clients/" class="text-xs font-semibold text-emerald-600 hover:underline">
+        全部客户端库 &rarr;
+      </a>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      {featuredClients.map((client) => (
+        <div class="bg-white border border-slate-200 rounded-2xl p-5 flex flex-col justify-between hover:border-slate-300 hover:shadow-md transition-all">
+          <div>
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-xs font-mono font-bold text-emerald-600">{client.core}</span>
+              <span class="text-[10px] px-2 py-0.5 rounded bg-slate-100 text-slate-600 uppercase font-semibold">
+                {client.pricingType === 'free' ? '免费开源' : '付费软件'}
+              </span>
+            </div>
+            <h3 class="font-bold text-base text-slate-900 mb-1">
+              {client.name}
+            </h3>
+            <p class="text-xs text-slate-500 leading-relaxed mb-4 line-clamp-3">
+              {client.tagline}
+            </p>
+          </div>
+          <div class="pt-3 border-t border-slate-100">
+            <a
+              href={`/clients/${client.slug}/`}
+              class="block text-center py-2 px-3 text-xs font-semibold text-slate-700 bg-slate-50 hover:bg-slate-100 rounded-xl transition-colors"
+            >
+              配置教程与排错指南 &rarr;
+            </a>
+          </div>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <!-- Compliance Disclaimer at bottom -->
+  <div class="my-10">
+    <AffiliateDisclaimer />
+  </div>
+
+</BaseLayout>

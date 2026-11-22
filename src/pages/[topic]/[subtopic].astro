@@ -1,0 +1,355 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { TOPICS, type TopicItem, type SubtopicItem } from '@/data/topics';
+import { BRANDS, type BrandItem } from '@/data/brands';
+import { getSubtopicDeepContent } from '@/data/subtopics-depth';
+import { ARTICLES } from '@/data/articles';
+import BrandCard from '@/components/brands/BrandCard.astro';
+import PerformanceReport from '@/components/charts/PerformanceReport.astro';
+import AvailabilityMatrix from '@/components/charts/AvailabilityMatrix.astro';
+import NetworkTopology from '@/components/charts/NetworkTopology.astro';
+import AffiliateDisclaimer from '@/components/brands/AffiliateDisclaimer.astro';
+
+export async function getStaticPaths() {
+  const paths: any[] = [];
+  for (const topic of TOPICS) {
+    for (const subtopic of topic.subtopics) {
+      paths.push({
+        params: { topic: topic.slug, subtopic: subtopic.slug },
+        props: { topic, subtopic }
+      });
+    }
+  }
+  return paths;
+}
+
+export interface Props {
+  topic: TopicItem;
+  subtopic: SubtopicItem;
+}
+
+const { topic, subtopic } = Astro.props;
+
+// Fetch rich deep content & clusters
+const depth = getSubtopicDeepContent(topic.slug, subtopic.slug);
+
+// Fetch recommended brands
+const matchedBrands: BrandItem[] = subtopic.recommendedBrandSlugs
+  .map(slug => BRANDS.find(b => b.slug === slug))
+  .filter((b): b is BrandItem => Boolean(b));
+
+const displayBrands = matchedBrands.length > 0 ? matchedBrands : BRANDS.slice(0, 3);
+
+// Related sibling subtopics
+const siblingSubtopics = topic.subtopics.filter(s => s.slug !== subtopic.slug);
+
+const breadcrumbs = [
+  { name: '首页', url: '/' },
+  { name: topic.navTitle, url: `/${topic.slug}/` },
+  { name: subtopic.title.split('：')[0], url: `/${topic.slug}/${subtopic.slug}/` }
+];
+
+// Schema JSON-LD
+const faqSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  'mainEntity': subtopic.faqs.map(faq => ({
+    '@type': 'Question',
+    'name': faq.q,
+    'acceptedAnswer': {
+      '@type': 'Answer',
+      'text': faq.a
+    }
+  }))
+};
+
+const articleSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'TechArticle',
+  'headline': subtopic.title,
+  'description': subtopic.heroAnswer,
+  'url': `https://chatgptzhinan.homes/${topic.slug}/${subtopic.slug}/`,
+  'datePublished': '2026-10-19',
+  'dateModified': '2026-11-22',
+  'author': {
+    '@type': 'Organization',
+    'name': 'chatgpt指南技术编辑部'
+  }
+};
+---
+
+<BaseLayout
+  title={`${subtopic.title} | chatgpt指南`}
+  description={`${subtopic.title}。${subtopic.heroAnswer}`}
+  canonical={`https://chatgptzhinan.homes/${topic.slug}/${subtopic.slug}/`}
+  breadcrumbs={breadcrumbs}
+  schema={[articleSchema, faqSchema]}
+>
+
+  <article class="max-w-4xl mx-auto py-6 space-y-10">
+    
+    <!-- Header Area -->
+    <header class="space-y-4">
+      <div class="flex items-center gap-2">
+        <a href={`/${topic.slug}/`} class="px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 text-xs font-semibold hover:bg-emerald-100 transition-colors">
+          {topic.navTitle} · 二级细分中心
+        </a>
+        <span class="text-xs text-slate-400 font-mono">
+          2026 深度实测标准
+        </span>
+      </div>
+
+      <h1 class="text-2xl sm:text-4xl font-extrabold text-slate-900 tracking-tight leading-tight">
+        {subtopic.title}
+      </h1>
+
+      <!-- Answer-First Hero Callout -->
+      <div class="rounded-2xl bg-gradient-to-r from-emerald-50 via-teal-50 to-cyan-50 border border-emerald-200 p-5 sm:p-6 shadow-sm my-4 space-y-3">
+        <div class="flex items-center gap-2 text-emerald-900 font-bold text-sm">
+          <span>⚡ 核心答案优先（Direct Answer）</span>
+        </div>
+        <p class="text-sm sm:text-base text-slate-800 leading-relaxed font-medium">
+          {subtopic.heroAnswer}
+        </p>
+        <div class="mt-4 pt-3 border-t border-emerald-200/60 flex flex-wrap items-center justify-between gap-2 text-xs text-emerald-700">
+          <div>目标搜索意图：<span class="font-semibold text-slate-800 uppercase">{subtopic.searchIntent}</span></div>
+          <div>审核机构：chatgpt指南网络实验室 · 2026 年 11 月复核</div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Key Decision Factors Section -->
+    <section class="space-y-3">
+      <h2 class="text-xl font-bold text-slate-900 flex items-center gap-2">
+        <span>🎯</span>
+        <span>关键评估维度与决策判据</span>
+      </h2>
+      <p class="text-xs sm:text-sm text-slate-600 leading-relaxed">
+        针对当前细分搜索需求，在评估或配置时必须严格审查以下核心技术指标：
+      </p>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 my-4">
+        {subtopic.keyFactors.map((factor, fIdx) => (
+          <div class="bg-white border border-slate-200 rounded-xl p-4 flex items-start gap-3 shadow-xs">
+            <span class="flex-shrink-0 w-6 h-6 rounded-lg bg-emerald-50 text-emerald-600 font-bold text-xs flex items-center justify-center border border-emerald-100">
+              {fIdx + 1}
+            </span>
+            <div>
+              <div class="font-bold text-slate-900 text-xs sm:text-sm">{factor}</div>
+              <div class="text-[11px] text-slate-500 mt-1 leading-relaxed">
+                作为本专题的硬性考核指标，直接决定晚高峰抗封锁能力与真实吞吐。
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <!-- Visual Dashboard Section: Network Observatory Style -->
+    <section class="my-6">
+      {topic.slug === 'ai-streaming' ? (
+        <AvailabilityMatrix
+          brandName={displayBrands[0]?.name || '专线示范'}
+          notes="实测基于原生出口节点，非自制剧全解锁与 AI 原生支持。"
+        />
+      ) : (topic.slug === 'network' ? (
+        <NetworkTopology
+          brandName={displayBrands[0]?.name || '专线架构'}
+        />
+      ) : (
+        <PerformanceReport
+          brandName={displayBrands[0]?.name || '示范品牌'}
+          speedTests={displayBrands[0]?.speedTests || []}
+        />
+      ))}
+    </section>
+
+    <!-- Deep In-Depth Analysis Core -->
+    <section class="space-y-6 prose prose-slate max-w-none text-xs sm:text-sm text-slate-700 leading-relaxed border-t border-slate-200 pt-6">
+      {depth.coreAnalysis.map((section) => (
+        <div class="space-y-3">
+          <h2 class="text-xl font-bold text-slate-900 not-prose">
+            {section.heading}
+          </h2>
+          {section.paragraphs.map((p) => (
+            <p>{p}</p>
+          ))}
+        </div>
+      ))}
+    </section>
+
+    <!-- Technical Comparison Matrix if present -->
+    {depth.comparisonTable && (
+      <section class="space-y-3 pt-6 border-t border-slate-200">
+        <h2 class="text-xl font-bold text-slate-900 flex items-center gap-2">
+          <span>📊</span>
+          <span>{depth.comparisonTable.title}</span>
+        </h2>
+        <div class="overflow-x-auto my-4">
+          <table class="w-full text-left border-collapse border border-slate-200 text-xs">
+            <thead>
+              <tr class="bg-slate-100 text-slate-800 font-bold">
+                {depth.comparisonTable.headers.map((h) => (
+                  <th class="p-3 border border-slate-200 whitespace-nowrap">{h}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-200">
+              {depth.comparisonTable.rows.map((row) => (
+                <tr class="hover:bg-slate-50 transition-colors">
+                  {row.map((cell, cIdx) => (
+                    <td class={`p-3 border border-slate-200 ${cIdx === 0 ? 'font-semibold text-slate-900 bg-slate-50' : 'text-slate-600'}`}>
+                      {cell}
+                    </td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </section>
+    )}
+
+    <!-- Tertiary Article Clusters Section (三级文章规划集群) -->
+    {depth.clusters.length > 0 && (
+      <section class="space-y-4 pt-6 border-t border-slate-200">
+        <div class="flex items-center justify-between">
+          <div>
+            <h2 class="text-xl font-bold text-slate-900 flex items-center gap-2">
+              <span>📚</span>
+              <span>本二级专题下属三级文章知识集群（Content Clusters）</span>
+            </h2>
+            <p class="text-xs text-slate-500 mt-1">
+              围绕细分长尾搜索需求与具体操作问题构建的内容矩阵规划：
+            </p>
+          </div>
+          <span class="text-xs font-mono text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-200">
+            {depth.clusters.reduce((acc, c) => acc + c.articles.length, 0)} 篇选题规划
+          </span>
+        </div>
+
+        <div class="space-y-4 my-4">
+          {depth.clusters.map((cluster) => (
+            <div class="p-4 rounded-2xl bg-white border border-slate-200 shadow-xs space-y-3">
+              <div class="border-b border-slate-100 pb-2">
+                <div class="font-bold text-slate-900 text-sm flex items-center gap-2">
+                  <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                  <span>{cluster.clusterName}</span>
+                </div>
+                <div class="text-xs text-slate-500 mt-0.5">{cluster.description}</div>
+              </div>
+
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                {cluster.articles.map((art) => {
+                  const targetArt = ARTICLES.find((a) => a.slug === art.slug);
+                  const artHref = targetArt
+                    ? `/${targetArt.topicSlug}/${targetArt.subtopicSlug}/${targetArt.slug}/`
+                    : `/${topic.slug}/${subtopic.slug}/${art.slug}/`;
+                  return (
+                    <a
+                      href={artHref}
+                      class="p-3.5 rounded-xl bg-white border border-slate-200 hover:border-emerald-500 hover:shadow-md transition-all flex flex-col justify-between cursor-pointer group"
+                    >
+                      <div>
+                        <div class="flex items-center justify-between gap-1 mb-1.5">
+                          <span class="text-[10px] px-2 py-0.5 rounded font-mono bg-slate-100 text-slate-700 font-semibold">
+                            {art.searchIntent.toUpperCase()}
+                          </span>
+                          <span class="text-[10px] text-white font-bold bg-emerald-600 px-2 py-0.5 rounded shadow-xs flex items-center gap-1 group-hover:bg-emerald-500 transition-colors">
+                            <span>阅读指南</span>
+                            <span>&rarr;</span>
+                          </span>
+                        </div>
+                        <div class="text-xs sm:text-sm font-bold text-slate-900 group-hover:text-emerald-700 transition-colors line-clamp-2 leading-snug">
+                          {art.title}
+                        </div>
+                      </div>
+                      <div class="mt-2.5 pt-2 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-500">
+                        <span>核心词: <code class="text-emerald-700 font-mono font-medium">{art.targetKeyword}</code></span>
+                        <span class="text-emerald-600 text-[11px] font-semibold group-hover:underline">点击阅读全文 &rarr;</span>
+                      </div>
+                    </a>
+                  );
+                })}
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+    )}
+
+    <!-- Recommended Brands Spotlight for this Subtopic -->
+    <section class="space-y-4 pt-6 border-t border-slate-200">
+      <div class="flex items-center justify-between">
+        <div>
+          <h2 class="text-xl font-bold text-slate-900">
+            ⚡ 针对本专题的优质服务商实测推荐
+          </h2>
+          <p class="text-xs text-slate-500 mt-0.5">
+            基于可验证的测速数据与兼容性，为你挑选与本需求最匹配的节点服务。
+          </p>
+        </div>
+        <a href="/brands/" class="text-xs font-semibold text-emerald-600 hover:underline">
+          查看全部 31 家品牌 &rarr;
+        </a>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {displayBrands.map((b) => (
+          <BrandCard brand={b} />
+        ))}
+      </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section class="space-y-4 pt-6 border-t border-slate-200">
+      <h2 class="text-xl font-bold text-slate-900 flex items-center gap-2">
+        <span>❓</span>
+        <span>常见问题与故障答疑（FAQ）</span>
+      </h2>
+
+      <div class="space-y-3">
+        {subtopic.faqs.map((faq) => (
+          <div class="rounded-xl bg-white border border-slate-200 p-4 shadow-2xs">
+            <h3 class="font-bold text-slate-900 text-xs sm:text-sm mb-1.5 flex items-start gap-2">
+              <span class="text-emerald-600 font-mono">Q:</span>
+              <span>{faq.q}</span>
+            </h3>
+            <p class="text-xs text-slate-600 leading-relaxed pl-5 border-l border-emerald-200">
+              <strong class="text-emerald-700">A: </strong>{faq.a}
+            </p>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <!-- Related Siblings Subtopics -->
+    <section class="pt-6 border-t border-slate-200 space-y-3">
+      <h3 class="font-bold text-slate-900 text-sm">
+        📌 关联二级专题与延伸阅读：
+      </h3>
+      <div class="flex flex-wrap gap-2">
+        {siblingSubtopics.map((sib) => (
+          <a
+            href={`/${topic.slug}/${sib.slug}/`}
+            class="text-xs px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-emerald-50 hover:text-emerald-700 text-slate-700 transition-colors"
+          >
+            {sib.title.split('：')[0]} &rarr;
+          </a>
+        ))}
+        <a
+          href={`/${topic.slug}/`}
+          class="text-xs px-3 py-1.5 rounded-lg bg-emerald-50 text-emerald-700 font-semibold hover:bg-emerald-100 transition-colors"
+        >
+          返回【{topic.navTitle}】主专题首页
+        </a>
+      </div>
+    </section>
+
+    <div class="pt-4">
+      <AffiliateDisclaimer />
+    </div>
+
+  </article>
+
+</BaseLayout>
